@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -37,7 +38,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (!authLoading && isLoggedIn) {
-      router.replace('/dashboard');
+      router.replace('/'); // Redirect to home page (ResumeBuilder)
     }
   }, [isLoggedIn, authLoading, router]);
 
@@ -45,7 +46,8 @@ export default function LoginPage() {
     setIsSubmitting(true);
     const success = await login(data.email, data.password);
     if (success) {
-      toast({ title: 'Login Successful', description: 'Redirecting to dashboard...' });
+      toast({ title: 'Login Successful', description: 'Redirecting...' });
+      // Redirection is handled by the useEffect hook
     } else {
       toast({
         title: 'Login Failed',
@@ -59,7 +61,9 @@ export default function LoginPage() {
   if (authLoading) {
     return <div className="flex min-h-screen items-center justify-center bg-background"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
   }
-  if (isLoggedIn) { // Second check to prevent rendering form if already logged in
+  // If already logged in and not loading, useEffect will handle redirect.
+  // This prevents rendering the form momentarily if already logged in.
+  if (isLoggedIn) { 
     return <div className="flex min-h-screen items-center justify-center bg-background"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
   }
 

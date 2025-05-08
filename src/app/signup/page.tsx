@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -44,7 +45,7 @@ export default function SignupPage() {
 
   useEffect(() => {
     if (!authLoading && isLoggedIn) {
-      router.replace('/dashboard');
+      router.replace('/'); // Redirect to home page (ResumeBuilder)
     }
   }, [isLoggedIn, authLoading, router]);
 
@@ -52,7 +53,8 @@ export default function SignupPage() {
     setIsSubmitting(true);
     const success = await signup(data.email, data.password);
     if (success) {
-      toast({ title: 'Signup Successful', description: 'Redirecting to dashboard...' });
+      toast({ title: 'Signup Successful', description: 'Redirecting...' });
+      // Redirection is handled by the useEffect hook
     } else {
       toast({
         title: 'Signup Failed',
@@ -66,6 +68,7 @@ export default function SignupPage() {
   if (authLoading) {
     return <div className="flex min-h-screen items-center justify-center bg-background"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
   }
+   // If already logged in and not loading, useEffect will handle redirect.
   if (isLoggedIn) {
      return <div className="flex min-h-screen items-center justify-center bg-background"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
   }

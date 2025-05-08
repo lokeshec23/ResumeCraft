@@ -11,13 +11,15 @@ import ResumeFormWrapper from './ResumeFormWrapper';
 import ResumePreviewWrapper from './ResumePreviewWrapper';
 import TemplateSelector from './TemplateSelector';
 import { Button } from '@/components/ui/button';
-import { Download, Edit3, Palette, Bot, Eye, X, ChevronDown } from 'lucide-react';
+import { Download, Edit3, Palette, Bot, Eye, X, ChevronDown, UserCircle, LogOut, LayoutDashboard } from 'lucide-react';
 import { exportToPdf } from '@/lib/pdfGenerator';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Card, CardContent } from '@/components/ui/card';
 import { ThemeToggleButton } from '@/components/theme/ThemeToggleButton';
+import { useAuth } from '@/hooks/useAuth';
+import Link from 'next/link';
 import {
   Dialog,
   DialogContent,
@@ -84,6 +86,7 @@ const ResumeBuilder: React.FC = () => {
   const { toast } = useToast();
   const [mounted, setMounted] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const { user, isLoggedIn, logout } = useAuth();
 
   const methods = useForm<ResumeData>({
     resolver: zodResolver(resumeSchema),
@@ -159,7 +162,8 @@ const ResumeBuilder: React.FC = () => {
   if (!mounted) {
     return ( 
       <div className="flex items-center justify-center min-h-screen bg-background">
-        <p className="text-lg text-foreground">Loading AI Resume Architect...</p>
+        {/* The parent page (src/app/page.tsx) handles the main loader if not logged in */}
+        <p className="text-lg text-foreground">Loading AI Resume Architect Editor...</p>
       </div>
     );
   }
@@ -169,9 +173,9 @@ const ResumeBuilder: React.FC = () => {
       <div className="flex flex-col min-h-screen bg-background">
         <header className="bg-primary text-primary-foreground p-2 sm:p-3 shadow-md sticky top-0 z-50">
           <div className="container mx-auto flex flex-wrap justify-between items-center gap-2">
-            <h1 className="text-lg sm:text-xl font-bold flex items-center">
+            <Link href="/" className="text-lg sm:text-xl font-bold flex items-center">
               <Bot className="mr-1.5 h-5 w-5 sm:h-6 sm:w-6" /> AI Resume Architect
-            </h1>
+            </Link>
             <div className="flex items-center space-x-1 sm:space-x-2">
               <ThemeToggleButton />
               <Button 
@@ -181,6 +185,27 @@ const ResumeBuilder: React.FC = () => {
               >
                 <Eye /> Preview
               </Button>
+              {isLoggedIn && user && (
+                <>
+                  <span className="text-xs sm:text-sm hidden md:flex items-center gap-1 text-primary-foreground/80">
+                    <UserCircle className="h-4 w-4" />
+                    {user.email}
+                  </span>
+                   <Link href="/dashboard" passHref>
+                    <Button variant="ghost" size="sm" className="text-primary-foreground hover:bg-primary/80 hover:text-primary-foreground px-2 py-1 text-xs sm:px-2.5 sm:text-sm gap-1 [&_svg]:size-3.5">
+                       <LayoutDashboard /> Dashboard
+                    </Button>
+                  </Link>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={logout} 
+                    className="text-primary-foreground hover:bg-primary/80 hover:text-primary-foreground px-2 py-1 text-xs sm:px-2.5 sm:text-sm gap-1 [&_svg]:size-3.5"
+                  >
+                    <LogOut /> Logout
+                  </Button>
+                </>
+              )}
             </div>
           </div>
         </header>
