@@ -1,14 +1,25 @@
+
 'use client';
 
+import { useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import type { ResumeData } from '@/lib/resumeTypes';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Button } from '@/components/ui/button';
+import { Sparkles } from 'lucide-react';
+import AISummaryGeneratorDialog from '../AISummaryGeneratorDialog';
 
 const PersonalDetailsSection: React.FC = () => {
-  const { control } = useFormContext<ResumeData>();
+  const { control, watch, setValue } = useFormContext<ResumeData>();
+  const [isAiDialogOpen, setIsAiDialogOpen] = useState(false);
+  const currentResumeData = watch(); // Get all form data
+
+  const handleGeneratedSummary = (summary: string) => {
+    setValue('personalDetails.summary', summary, { shouldValidate: true, shouldDirty: true });
+  };
 
   return (
     <div className="space-y-6">
@@ -73,7 +84,26 @@ const PersonalDetailsSection: React.FC = () => {
         name="personalDetails.summary"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Summary / Objective</FormLabel>
+            <div className="flex justify-between items-center mb-1">
+              <FormLabel>Summary / Objective</FormLabel>
+              <AISummaryGeneratorDialog
+                isOpen={isAiDialogOpen}
+                onOpenChange={setIsAiDialogOpen}
+                currentResumeData={currentResumeData}
+                onSummaryGenerated={handleGeneratedSummary}
+              >
+                <Button 
+                  type="button" 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => setIsAiDialogOpen(true)}
+                  className="text-accent hover:text-accent/90 hover:bg-accent/10 px-2 py-1"
+                >
+                  <Sparkles className="mr-1.5 h-3.5 w-3.5" />
+                  Generate with AI
+                </Button>
+              </AISummaryGeneratorDialog>
+            </div>
             <FormControl>
               <Textarea placeholder="A brief professional summary or career objective..." {...field} rows={4} />
             </FormControl>
@@ -127,3 +157,5 @@ const PersonalDetailsSection: React.FC = () => {
 };
 
 export default PersonalDetailsSection;
+
+    
