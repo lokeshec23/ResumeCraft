@@ -1,3 +1,4 @@
+
 import type { ResumeTemplateComponentProps } from '@/lib/resumeTypes';
 import { Mail, Phone, Linkedin, Github, Globe, MapPin, User, Briefcase, GraduationCap, Lightbulb, Code2, Wrench } from 'lucide-react';
 

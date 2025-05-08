@@ -1,3 +1,4 @@
+
 'use client';
 
 import type { TemplateId } from '@/lib/resumeTypes';
@@ -23,7 +24,7 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({ selectedTemplate, o
         <RadioGroup
           value={selectedTemplate}
           onValueChange={(value) => onSelectTemplate(value as TemplateId)}
-          className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4" // Changed to md:grid-cols-3
         >
           {TEMPLATES.map((template) => (
             <Label
@@ -38,10 +39,10 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({ selectedTemplate, o
                    <Image
                     src={template.thumbnailUrl}
                     alt={`${template.name} thumbnail`}
-                    width={150}
-                    height={200}
-                    className="object-cover w-full h-full"
-                    data-ai-hint="resume template"
+                    width={150} // Intrinsic width for next/image optimization
+                    height={200} // Intrinsic height for next/image optimization
+                    className="object-cover w-full h-full" // CSS to make it fill the container
+                    data-ai-hint={template.aiHint || "resume template"} // Added data-ai-hint
                   />
                 </div>
               )}

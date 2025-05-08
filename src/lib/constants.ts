@@ -3,6 +3,11 @@ import DefaultTemplate from '@/components/resume-craft/templates/DefaultTemplate
 import ModernTemplate from '@/components/resume-craft/templates/ModernTemplate';
 import CreativeTemplate from '@/components/resume-craft/templates/CreativeTemplate';
 import TechnicalTemplate from '@/components/resume-craft/templates/TechnicalTemplate';
+import ElegantTemplate from '@/components/resume-craft/templates/ElegantTemplate';
+import CompactTemplate from '@/components/resume-craft/templates/CompactTemplate';
+import LeftAlignedModernTemplate from '@/components/resume-craft/templates/LeftAlignedModernTemplate';
+import ArtisticTemplate from '@/components/resume-craft/templates/ArtisticTemplate';
+
 
 export const DEFAULT_RESUME_DATA: ResumeData = {
   personalDetails: {
@@ -61,25 +66,57 @@ export const TEMPLATES: ResumeTemplate[] = [
     id: 'default',
     name: 'Classic Professional',
     component: DefaultTemplate,
-    thumbnailUrl: 'https://picsum.photos/seed/default_template_v1/300/400', // Updated seed for potentially new image
+    thumbnailUrl: 'https://picsum.photos/seed/default_template_v2/300/400', 
+    aiHint: 'classic professional',
   },
   {
     id: 'modern',
     name: 'Modern Minimalist',
     component: ModernTemplate,
-    thumbnailUrl: 'https://picsum.photos/seed/modern_template_v1/300/400', // Updated seed
+    thumbnailUrl: 'https://picsum.photos/seed/modern_template_v2/300/400',
+    aiHint: 'modern minimalist',
   },
   {
     id: 'creative',
     name: 'Creative Flair',
     component: CreativeTemplate,
-    thumbnailUrl: 'https://picsum.photos/seed/creative_template_v1/300/400',
+    thumbnailUrl: 'https://picsum.photos/seed/creative_template_v2/300/400',
+    aiHint: 'creative flair',
   },
   {
     id: 'technical',
     name: 'Developer Focus',
     component: TechnicalTemplate,
-    thumbnailUrl: 'https://picsum.photos/seed/technical_template_v1/300/400',
+    thumbnailUrl: 'https://picsum.photos/seed/technical_template_v2/300/400',
+    aiHint: 'developer focus',
+  },
+  {
+    id: 'elegant',
+    name: 'Elegant Sophisticate',
+    component: ElegantTemplate,
+    thumbnailUrl: 'https://picsum.photos/seed/elegant_template_v1/300/400',
+    aiHint: 'elegant resume',
+  },
+  {
+    id: 'compact',
+    name: 'Compact Professional',
+    component: CompactTemplate,
+    thumbnailUrl: 'https://picsum.photos/seed/compact_template_v1/300/400',
+    aiHint: 'compact resume',
+  },
+  {
+    id: 'left-aligned-modern',
+    name: 'Sidebar Modern',
+    component: LeftAlignedModernTemplate,
+    thumbnailUrl: 'https://picsum.photos/seed/sidebar_modern_v1/300/400',
+    aiHint: 'sidebar modern',
+  },
+  {
+    id: 'artistic',
+    name: 'Artistic Showcase',
+    component: ArtisticTemplate,
+    thumbnailUrl: 'https://picsum.photos/seed/artistic_template_v1/300/400',
+    aiHint: 'artistic resume',
   },
 ];
 
