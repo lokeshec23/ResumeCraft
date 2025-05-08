@@ -15,6 +15,8 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { Loader2, LogIn } from 'lucide-react';
 
+const PENDING_LOGIN_EMAIL_KEY = 'pendingLoginEmail';
+
 const loginSchema = z.object({
   email: z.string().email({ message: 'Invalid email address.' }),
   password: z.string().min(6, { message: 'Password must be at least 6 characters.' }),
@@ -38,20 +40,37 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (!authLoading && isLoggedIn) {
-      router.replace('/dashboard'); // Redirect to dashboard page
+      router.replace('/dashboard');
+      return; 
     }
-  }, [isLoggedIn, authLoading, router]);
+
+    // Check if redirected from signup for email pre-fill
+    try {
+      const pendingEmail = sessionStorage.getItem(PENDING_LOGIN_EMAIL_KEY);
+      if (pendingEmail) {
+        form.setValue('email', pendingEmail);
+        toast({
+          title: 'Account Created!',
+          description: 'Please enter your password to log in.',
+        });
+        sessionStorage.removeItem(PENDING_LOGIN_EMAIL_KEY);
+      }
+    } catch (error) {
+      console.error("Error processing pending login email:", error);
+      sessionStorage.removeItem(PENDING_LOGIN_EMAIL_KEY); // Clear potentially corrupted key
+    }
+  }, [isLoggedIn, authLoading, router, form, toast]);
 
   const onSubmit = async (data: LoginFormValues) => {
     setIsSubmitting(true);
     const success = await login(data.email, data.password);
     if (success) {
       toast({ title: 'Login Successful', description: 'Redirecting to dashboard...' });
-      // Redirection is handled by the useAuth hook or the useEffect above
+      router.replace('/dashboard'); // Page handles redirection
     } else {
       toast({
         title: 'Login Failed',
-        description: 'Invalid email or password. Please try again.', // Generic message for security
+        description: 'Invalid email or password. Please try again.',
         variant: 'destructive',
       });
     }
@@ -61,12 +80,9 @@ export default function LoginPage() {
   if (authLoading) {
     return <div className="flex min-h-screen items-center justify-center bg-background"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
   }
-  // If already logged in and not loading, useEffect will handle redirect.
-  // This prevents rendering the form momentarily if already logged in.
   if (isLoggedIn) { 
     return <div className="flex min-h-screen items-center justify-center bg-background"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
   }
-
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-background via-muted to-background p-4">
@@ -124,4 +140,3 @@ export default function LoginPage() {
     </div>
   );
 }
-

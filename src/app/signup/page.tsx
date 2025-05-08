@@ -45,7 +45,7 @@ export default function SignupPage() {
 
   useEffect(() => {
     if (!authLoading && isLoggedIn) {
-      router.replace('/dashboard'); // Redirect to dashboard page
+      router.replace('/dashboard'); 
     }
   }, [isLoggedIn, authLoading, router]);
 
@@ -53,12 +53,12 @@ export default function SignupPage() {
     setIsSubmitting(true);
     const success = await signup(data.email, data.password);
     if (success) {
-      toast({ title: 'Signup Successful', description: 'Redirecting to dashboard...' });
-      // Redirection is handled by the useAuth hook or the useEffect above
+      toast({ title: 'Signup Successful!', description: 'Please log in with your new account.' });
+      router.push('/login'); // Redirect to login page
     } else {
       toast({
         title: 'Signup Failed',
-        description: 'Could not create account. Please try again.', // Generic error
+        description: 'Could not create account. Please try again.', 
         variant: 'destructive',
       });
     }
@@ -68,7 +68,6 @@ export default function SignupPage() {
   if (authLoading) {
     return <div className="flex min-h-screen items-center justify-center bg-background"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
   }
-   // If already logged in and not loading, useEffect will handle redirect.
   if (isLoggedIn) {
      return <div className="flex min-h-screen items-center justify-center bg-background"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
   }
@@ -144,4 +143,3 @@ export default function SignupPage() {
     </div>
   );
 }
-
