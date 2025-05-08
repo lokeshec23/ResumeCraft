@@ -1,3 +1,4 @@
+
 'use client';
 
 import type { ResumeData, TemplateId } from '@/lib/resumeTypes';
@@ -19,9 +20,9 @@ const ResumePreviewWrapper: React.FC<ResumePreviewWrapperProps> = ({ resumeData,
   }
 
   return (
-    <ScrollArea className={cn("h-full rounded-lg shadow-xl bg-card", className)}>
-      <div id={PREVIEW_CONTAINER_ID} className="p-2 sm:p-4 md:p-0 print:p-0 print:shadow-none print:bg-white"> {/* Ensure preview container has specific ID */}
-        <div className="aspect-[210/297] w-full max-w-full mx-auto overflow-hidden print:overflow-visible"> {/* A4 aspect ratio */}
+    <ScrollArea className={cn("h-full rounded-lg", className)}> {/* Removed shadow-xl and bg-card, dialog provides bg */}
+      <div id={PREVIEW_CONTAINER_ID} className="p-4 sm:p-6 print:p-0 print:shadow-none print:bg-white flex justify-center items-start"> {/* Consistent padding, flex to center content if smaller */}
+        <div className="aspect-[210/297] w-full max-w-full mx-auto overflow-hidden print:overflow-visible bg-card shadow-lg print:shadow-none"> {/* A4 aspect ratio with card background and shadow */}
           <SelectedTemplateComponent data={resumeData} />
         </div>
       </div>
@@ -30,3 +31,5 @@ const ResumePreviewWrapper: React.FC<ResumePreviewWrapperProps> = ({ resumeData,
 };
 
 export default ResumePreviewWrapper;
+
+    

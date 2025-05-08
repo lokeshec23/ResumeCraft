@@ -11,13 +11,21 @@ import ResumeFormWrapper from './ResumeFormWrapper';
 import ResumePreviewWrapper from './ResumePreviewWrapper';
 import TemplateSelector from './TemplateSelector';
 import { Button } from '@/components/ui/button';
-import { Download, Edit3, Palette, Bot } from 'lucide-react';
+import { Download, Edit3, Palette, Bot, Eye, X } from 'lucide-react';
 import { exportToPdf } from '@/lib/pdfGenerator';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Card, CardContent } from '@/components/ui/card';
 import { ThemeToggleButton } from '@/components/theme/ThemeToggleButton';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogClose,
+} from '@/components/ui/dialog';
 
 // Basic Zod schema (can be expanded for more detailed validation)
 const resumeSchema = z.object({
@@ -66,6 +74,7 @@ const ResumeBuilder: React.FC = () => {
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateId>(TEMPLATES[0].id);
   const { toast } = useToast();
   const [mounted, setMounted] = useState(false);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
   const methods = useForm<ResumeData>({
     resolver: zodResolver(resumeSchema),
@@ -77,35 +86,23 @@ const ResumeBuilder: React.FC = () => {
 
   useEffect(() => {
     setMounted(true);
-    // Example of loading from localStorage if desired
-    // const savedData = localStorage.getItem('resumeData');
-    // if (savedData) {
-    //   try {
-    //     const parsedData = JSON.parse(savedData);
-    //     // Ensure data structure compatibility before resetting
-    //     methods.reset(parsedData);
-    //   } catch (e) {
-    //     console.error("Failed to parse saved resume data", e);
-    //     // Fallback to default if parsing fails
-    //     methods.reset(DEFAULT_RESUME_DATA);
-    //   }
-    // } else {
-    //    methods.reset(DEFAULT_RESUME_DATA); // Ensure form has defaults if nothing in LS
-    // }
-    // const savedTemplate = localStorage.getItem('selectedTemplate');
-    // if (savedTemplate && TEMPLATES.find(t => t.id === savedTemplate)) {
-    //   setSelectedTemplate(savedTemplate as TemplateId);
-    // }
-  }, [methods]);
+  }, []);
 
-  // useEffect(() => {
-  //   if (mounted) {
-  //     localStorage.setItem('resumeData', JSON.stringify(resumeData));
-  //     localStorage.setItem('selectedTemplate', selectedTemplate);
-  //   }
-  // }, [resumeData, selectedTemplate, mounted]);
 
   const handleExportPdf = async () => {
+    if (!isPreviewOpen) {
+      // Ensure preview is rendered for PDF generation if PDF is triggered from header
+      // A more robust solution might involve rendering preview off-screen or ensuring dialog is open
+      // For now, we'll rely on the preview dialog being the primary source for PDF export
+      toast({ title: "Open Preview", description: "Please open the preview window first to download the PDF.", variant: "default" });
+      setIsPreviewOpen(true); // Open preview if not already
+      // Wait for dialog to open and content to render, this is a bit tricky
+      // A better UX is to have download button primarily in the preview dialog
+      // Or disable header download if preview not open / make it open preview
+      // For now, let's assume this simple toast and open is a first step.
+      return; 
+    }
+
     toast({ title: "Processing PDF", description: "Your resume is being generated..." });
     try {
       await exportToPdf(PREVIEW_CONTAINER_ID, `${resumeData.personalDetails.fullName?.replace(/\s+/g, '_') || 'Resume'}_Resume`);
@@ -115,6 +112,19 @@ const ResumeBuilder: React.FC = () => {
       toast({ title: "Error", description: "Could not generate PDF. Please try again.", variant: "destructive" });
     }
   };
+  
+  const handleDialogExportPdf = async () => {
+    toast({ title: "Processing PDF", description: "Your resume is being generated..." });
+    try {
+      await exportToPdf(PREVIEW_CONTAINER_ID, `${resumeData.personalDetails.fullName?.replace(/\s+/g, '_') || 'Resume'}_Resume`);
+      toast({ title: "Success!", description: "Your resume has been downloaded as a PDF.", variant: "default" });
+      // setIsPreviewOpen(false); // Optionally close dialog after download
+    } catch (error) {
+      console.error("PDF Export Error:", error);
+      toast({ title: "Error", description: "Could not generate PDF. Please try again.", variant: "destructive" });
+    }
+  };
+
 
   if (!mounted) {
     return ( 
@@ -135,6 +145,13 @@ const ResumeBuilder: React.FC = () => {
             <div className="flex items-center space-x-1 sm:space-x-2">
               <ThemeToggleButton />
               <Button 
+                variant="outline"
+                onClick={() => setIsPreviewOpen(true)}
+                className="text-primary-foreground border-primary-foreground/30 hover:bg-primary-foreground/20 hover:text-primary-foreground px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 sm:text-sm gap-1 [&_svg]:size-3.5"
+              >
+                <Eye /> Preview
+              </Button>
+              <Button 
                 onClick={handleExportPdf} 
                 className="bg-gradient-to-r from-accent to-primary text-accent-foreground hover:from-accent/80 hover:to-primary/80 hover:shadow-lg active:scale-95 transition-all duration-150 ease-in-out transform hover:scale-[1.02] px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 sm:text-sm gap-1 [&_svg]:size-3.5"
               >
@@ -144,9 +161,9 @@ const ResumeBuilder: React.FC = () => {
           </div>
         </header>
 
-        <main className="flex-grow container mx-auto p-2 sm:p-4 grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-6">
-          <div className="lg:col-span-5 xl:col-span-4">
-            <Card className="shadow-lg h-full">
+        <main className="flex-grow container mx-auto p-2 sm:p-4 flex justify-center">
+          <div className="w-full md:max-w-2xl lg:max-w-3xl xl:max-w-4xl">
+            <Card className="shadow-lg">
               <CardContent className="p-0">
                 <Tabs defaultValue="editor" className="w-full">
                   <TabsList className="grid w-full grid-cols-2 rounded-none rounded-t-lg">
@@ -171,18 +188,36 @@ const ResumeBuilder: React.FC = () => {
               </CardContent>
             </Card>
           </div>
-
-          <div className="lg:col-span-7 xl:col-span-8">
-            <div className="sticky top-[calc(theme(spacing.16)_+_1px)] sm:top-[calc(theme(spacing.20)_+_1px)]"> {/* Adjust top based on new header height */}
+        </main>
+        
+        <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
+          <DialogContent className="max-w-[850px] w-[90vw] h-[90vh] flex flex-col p-0 sm:p-0 rounded-lg shadow-2xl">
+            <DialogHeader className="p-3 sm:p-4 border-b sticky top-0 bg-background z-10">
+              <DialogTitle className="text-lg">Resume Preview</DialogTitle>
+              <DialogClose asChild>
+                <Button variant="ghost" size="icon" className="absolute right-2 top-2 sm:right-3 sm:top-2.5">
+                  <X className="h-5 w-5" />
+                </Button>
+              </DialogClose>
+            </DialogHeader>
+            <div className="flex-grow overflow-hidden"> {/* Container for ResumePreviewWrapper */}
               <ResumePreviewWrapper 
                 resumeData={resumeData} 
                 selectedTemplateId={selectedTemplate}
-                className="max-h-[calc(100vh-80px)] sm:max-h-[calc(100vh-100px)]" 
+                className="h-full bg-muted/30" 
               />
             </div>
-          </div>
-        </main>
-        
+            <DialogFooter className="p-3 sm:p-4 border-t sticky bottom-0 bg-background z-10">
+              <Button variant="outline" onClick={() => setIsPreviewOpen(false)}>Close</Button>
+              <Button 
+                onClick={handleDialogExportPdf}
+                className="bg-accent hover:bg-accent/90 text-accent-foreground"
+              >
+                <Download className="mr-2 h-4 w-4" /> Download PDF
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </FormProvider>
   );
@@ -190,3 +225,4 @@ const ResumeBuilder: React.FC = () => {
 
 export default ResumeBuilder;
 
+    
