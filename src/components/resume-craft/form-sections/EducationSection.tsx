@@ -1,19 +1,37 @@
+
 'use client';
 
+import { useState } from 'react';
 import { useFormContext, useFieldArray } from 'react-hook-form';
 import type { ResumeData } from '@/lib/resumeTypes';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { PlusCircle, Trash2 } from 'lucide-react';
+import { PlusCircle, Trash2, Sparkles } from 'lucide-react';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import AIEducationDescriptionDialog from '../AIEducationDescriptionDialog';
 
 const EducationSection: React.FC = () => {
-  const { control } = useFormContext<ResumeData>();
+  const { control, setValue, watch } = useFormContext<ResumeData>();
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'education',
   });
+
+  const [aiDialogState, setAiDialogState] = useState<{isOpen: boolean, index: number | null}>({isOpen: false, index: null});
+
+  const openAIDialog = (index: number) => {
+    setAiDialogState({isOpen: true, index});
+  };
+
+  const handleGeneratedDescription = (description: string) => {
+    if (aiDialogState.index !== null) {
+      setValue(`education.${aiDialogState.index}.description`, description, { shouldValidate: true, shouldDirty: true });
+    }
+  };
+
+  const currentEducationEntry = aiDialogState.index !== null ? watch(`education.${aiDialogState.index}`) : null;
+
 
   const addNewEntry = () => {
     append({
@@ -105,7 +123,20 @@ const EducationSection: React.FC = () => {
             name={`education.${index}.description`}
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Description (Optional)</FormLabel>
+                <div className="flex justify-between items-center mb-1">
+                  <FormLabel>Description (Optional)</FormLabel>
+                   <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => openAIDialog(index)}
+                      className="text-accent hover:text-accent/90 hover:bg-accent/10 px-2 py-1 text-xs"
+                      disabled={!watch(`education.${index}.institution`) || !watch(`education.${index}.degree`)}
+                    >
+                      <Sparkles className="mr-1 h-3.5 w-3.5" />
+                      AI Assist
+                    </Button>
+                </div>
                 <FormControl>
                   <Textarea placeholder="e.g., Relevant coursework, honors, GPA (if noteworthy)" {...field} rows={2}/>
                 </FormControl>
@@ -128,6 +159,20 @@ const EducationSection: React.FC = () => {
       <Button type="button" variant="outline" onClick={addNewEntry} className="w-full text-accent border-accent hover:bg-accent/10 hover:text-accent">
         <PlusCircle className="mr-2 h-4 w-4" /> Add Education
       </Button>
+
+      {currentEducationEntry && aiDialogState.index !== null && (
+        <AIEducationDescriptionDialog
+          isOpen={aiDialogState.isOpen && aiDialogState.index !== null}
+          onOpenChange={(isOpen) => setAiDialogState({ isOpen, index: isOpen ? aiDialogState.index : null })}
+          educationEntryData={{
+            institution: currentEducationEntry.institution,
+            degree: currentEducationEntry.degree,
+            fieldOfStudy: currentEducationEntry.fieldOfStudy,
+            description: currentEducationEntry.description,
+          }}
+          onDescriptionGenerated={handleGeneratedDescription}
+        />
+      )}
     </div>
   );
 };

@@ -97,10 +97,10 @@ const PersonalDetailsSection: React.FC = () => {
                   variant="ghost" 
                   size="sm" 
                   onClick={() => setIsAiDialogOpen(true)}
-                  className="text-accent hover:text-accent/90 hover:bg-accent/10 px-2 py-1"
+                  className="text-accent hover:text-accent/90 hover:bg-accent/10 px-2 py-1 text-xs"
                 >
-                  <Sparkles className="mr-1.5 h-3.5 w-3.5" />
-                  Generate with AI
+                  <Sparkles className="mr-1 h-3.5 w-3.5" />
+                  AI Generate
                 </Button>
               </AISummaryGeneratorDialog>
             </div>

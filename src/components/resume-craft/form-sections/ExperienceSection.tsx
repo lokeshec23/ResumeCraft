@@ -1,19 +1,40 @@
+
 'use client';
 
+import { useState } from 'react';
 import { useFormContext, useFieldArray } from 'react-hook-form';
 import type { ResumeData } from '@/lib/resumeTypes';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { PlusCircle, Trash2, Plus, X } from 'lucide-react';
+import { PlusCircle, Trash2, Plus, X, Sparkles } from 'lucide-react';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import AIResponsibilityGeneratorDialog from '../AIResponsibilityGeneratorDialog';
 
 const ExperienceSection: React.FC = () => {
-  const { control, register } = useFormContext<ResumeData>();
+  const { control, register, setValue, watch } = useFormContext<ResumeData>();
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'experience',
   });
+
+  const [aiDialogState, setAiDialogState] = useState<{isOpen: boolean, expIndex: number | null}>({isOpen: false, expIndex: null});
+
+  const allSkills = watch('skills');
+
+  const openAIDialog = (expIndex: number) => {
+    setAiDialogState({isOpen: true, expIndex});
+  };
+
+  const handleGeneratedResponsibilities = (newResponsibilities: string[]) => {
+    if (aiDialogState.expIndex !== null) {
+      const currentResponsibilities = watch(`experience.${aiDialogState.expIndex}.responsibilities`) || [];
+      setValue(`experience.${aiDialogState.expIndex}.responsibilities`, [...currentResponsibilities, ...newResponsibilities], { shouldValidate: true, shouldDirty: true });
+    }
+  };
+  
+  const currentExperienceEntry = aiDialogState.expIndex !== null ? watch(`experience.${aiDialogState.expIndex}`) : null;
+
 
   const addNewEntry = () => {
     append({
@@ -22,18 +43,18 @@ const ExperienceSection: React.FC = () => {
       jobTitle: '',
       startDate: '',
       endDate: '',
-      responsibilities: [], // Start with no responsibilities
+      responsibilities: [], 
     });
   };
 
   const addResponsibility = (expIndex: number) => {
     const experienceEntry = control.getValues(`experience.${expIndex}`);
-    control.setValue(`experience.${expIndex}.responsibilities`, [...experienceEntry.responsibilities, '']);
+    control.setValue(`experience.${expIndex}.responsibilities`, [...(experienceEntry.responsibilities || []), '']);
   };
 
   const removeResponsibility = (expIndex: number, respIndex: number) => {
     const experienceEntry = control.getValues(`experience.${expIndex}`);
-    const updatedResponsibilities = experienceEntry.responsibilities.filter((_, i) => i !== respIndex);
+    const updatedResponsibilities = (experienceEntry.responsibilities || []).filter((_, i) => i !== respIndex);
     control.setValue(`experience.${expIndex}.responsibilities`, updatedResponsibilities);
   };
 
@@ -100,20 +121,34 @@ const ExperienceSection: React.FC = () => {
           </div>
           
           <FormItem>
-            <FormLabel>Responsibilities</FormLabel>
+             <div className="flex justify-between items-center mb-1">
+                <FormLabel>Responsibilities</FormLabel>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => openAIDialog(index)}
+                  className="text-accent hover:text-accent/90 hover:bg-accent/10 px-2 py-1 text-xs"
+                  disabled={!watch(`experience.${index}.jobTitle`) || !watch(`experience.${index}.company`)}
+                >
+                  <Sparkles className="mr-1 h-3.5 w-3.5" />
+                  AI Assist
+                </Button>
+            </div>
             <div className="space-y-2">
-              {item.responsibilities?.map((_, respIndex) => ( // Added optional chaining for safety
-                <div key={respIndex} className="flex items-start space-x-2"> 
+              {(item.responsibilities || []).map((_, respIndex) => ( 
+                <div key={`${item.id}-resp-${respIndex}`} className="flex items-start space-x-2"> 
                   <Textarea
                     {...register(`experience.${index}.responsibilities.${respIndex}` as const)}
                     placeholder={`Responsibility ${respIndex + 1}`}
-                    className="flex-grow" 
+                    className="flex-grow"
+                    rows={2} 
                   />
                   <Button
                     type="button"
                     variant="ghost"
                     size="icon"
-                    className="text-destructive hover:bg-destructive/10 shrink-0"
+                    className="text-destructive hover:bg-destructive/10 shrink-0 mt-1"
                     onClick={() => removeResponsibility(index, respIndex)}
                     aria-label="Remove responsibility"
                   >
@@ -145,6 +180,20 @@ const ExperienceSection: React.FC = () => {
       <Button type="button" variant="outline" onClick={addNewEntry} className="w-full text-accent border-accent hover:bg-accent/10 hover:text-accent">
         <PlusCircle className="mr-2 h-4 w-4" /> Add Experience
       </Button>
+
+      {currentExperienceEntry && aiDialogState.expIndex !== null && (
+         <AIResponsibilityGeneratorDialog
+            isOpen={aiDialogState.isOpen && aiDialogState.expIndex !== null}
+            onOpenChange={(isOpen) => setAiDialogState({ isOpen, expIndex: isOpen ? aiDialogState.expIndex : null })}
+            experienceEntryData={{
+                jobTitle: currentExperienceEntry.jobTitle,
+                company: currentExperienceEntry.company,
+                responsibilities: currentExperienceEntry.responsibilities || [],
+            }}
+            allSkills={allSkills || []}
+            onResponsibilitiesGenerated={handleGeneratedResponsibilities}
+        />
+      )}
     </div>
   );
 };

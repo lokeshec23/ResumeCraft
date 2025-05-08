@@ -9,8 +9,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'ResumeCraft',
-  description: 'Build your perfect resume with ResumeCraft.',
+  title: 'AI Resume Architect',
+  description: 'Craft your perfect resume with AI-powered assistance.',
 };
 
 export default function RootLayout({
@@ -27,3 +27,4 @@ export default function RootLayout({
     </html>
   );
 }
+
