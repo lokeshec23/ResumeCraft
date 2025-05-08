@@ -134,8 +134,11 @@ const ResumeBuilder: React.FC = () => {
             </h1>
             <div className="flex items-center space-x-1 sm:space-x-2">
               <ThemeToggleButton />
-              <Button variant="secondary" onClick={handleExportPdf} className="bg-accent hover:bg-accent/90 text-accent-foreground px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 sm:text-sm">
-                <Download className="mr-1 h-3.5 w-3.5" /> Download PDF
+              <Button 
+                onClick={handleExportPdf} 
+                className="bg-gradient-to-r from-accent to-primary text-accent-foreground hover:from-accent/80 hover:to-primary/80 hover:shadow-lg active:scale-95 transition-all duration-150 ease-in-out transform hover:scale-[1.02] px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 sm:text-sm gap-1 [&_svg]:size-3.5"
+              >
+                <Download /> Download PDF
               </Button>
             </div>
           </div>
