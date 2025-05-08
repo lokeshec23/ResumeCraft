@@ -180,12 +180,11 @@ const ResumeBuilder: React.FC = () => {
           </div>
         </main>
         
-        <footer className="bg-primary text-primary-foreground p-3 text-center text-xs">
-          <p>&copy; {new Date().getFullYear()} AI Resume Architect. Built with Next.js & ShadCN UI.</p>
-        </footer>
+        {/* Footer removed as per user request */}
       </div>
     </FormProvider>
   );
 };
 
 export default ResumeBuilder;
+
