@@ -11,7 +11,7 @@ import ResumeFormWrapper from './ResumeFormWrapper';
 import ResumePreviewWrapper from './ResumePreviewWrapper';
 import TemplateSelector from './TemplateSelector';
 import { Button } from '@/components/ui/button';
-import { Download, Edit3, Palette, Bot, Eye, X } from 'lucide-react';
+import { Download, Edit3, Palette, Bot, Eye, X, ChevronDown } from 'lucide-react';
 import { exportToPdf } from '@/lib/pdfGenerator';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -26,6 +26,15 @@ import {
   DialogFooter,
   DialogClose,
 } from '@/components/ui/dialog';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
+import html2canvas from 'html2canvas';
+
 
 // Basic Zod schema (can be expanded for more detailed validation)
 const resumeSchema = z.object({
@@ -93,10 +102,56 @@ const ResumeBuilder: React.FC = () => {
     try {
       await exportToPdf(PREVIEW_CONTAINER_ID, `${resumeData.personalDetails.fullName?.replace(/\s+/g, '_') || 'Resume'}_Resume`);
       toast({ title: "Success!", description: "Your resume has been downloaded as a PDF.", variant: "default" });
-      // setIsPreviewOpen(false); // Optionally close dialog after download
     } catch (error) {
       console.error("PDF Export Error:", error);
       toast({ title: "Error", description: "Could not generate PDF. Please try again.", variant: "destructive" });
+    }
+  };
+
+  const handleDialogExportPng = async () => {
+    toast({ title: "Processing PNG", description: "Your resume is being generated..." });
+    const input = document.getElementById(PREVIEW_CONTAINER_ID);
+    if (!input) {
+      toast({ title: "Error", description: "Could not find resume content for PNG.", variant: "destructive" });
+      return;
+    }
+    try {
+      // Ensure content is fully visible for canvas capture
+      const originalOverflow = input.style.overflow;
+      const parentContainer = input.parentElement;
+      let originalParentOverflow: string | undefined;
+
+      if (parentContainer) {
+        originalParentOverflow = parentContainer.style.overflow;
+        parentContainer.style.overflow = 'visible'; 
+      }
+      input.style.overflow = 'visible';
+
+
+      const canvas = await html2canvas(input, {
+        scale: 2, // Higher scale for better quality
+        useCORS: true, // If using external images
+        logging: process.env.NODE_ENV === 'development',
+        width: input.scrollWidth, // Capture full content width
+        height: input.scrollHeight, // Capture full content height
+        windowWidth: input.scrollWidth,
+        windowHeight: input.scrollHeight,
+      });
+
+      input.style.overflow = originalOverflow; // Restore original style
+      if (parentContainer && originalParentOverflow !== undefined) {
+        parentContainer.style.overflow = originalParentOverflow;
+      }
+
+      const imgData = canvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.download = `${resumeData.personalDetails.fullName?.replace(/\s+/g, '_') || 'Resume'}_Resume.png`;
+      link.href = imgData;
+      link.click();
+      toast({ title: "Success!", description: "Your resume has been downloaded as a PNG.", variant: "default" });
+    } catch (error) {
+      console.error("PNG Export Error:", error);
+      toast({ title: "Error", description: "Could not generate PNG. Please try again.", variant: "destructive" });
     }
   };
 
@@ -120,13 +175,12 @@ const ResumeBuilder: React.FC = () => {
             <div className="flex items-center space-x-1 sm:space-x-2">
               <ThemeToggleButton />
               <Button 
-                variant="secondary" // Changed variant for different color
+                variant="secondary"
                 onClick={() => setIsPreviewOpen(true)}
                 className="text-secondary-foreground hover:bg-secondary/80 px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 sm:text-sm gap-1 [&_svg]:size-3.5"
               >
                 <Eye /> Preview
               </Button>
-              {/* Download button removed from header */}
             </div>
           </div>
         </header>
@@ -146,7 +200,7 @@ const ResumeBuilder: React.FC = () => {
                   </TabsList>
                   <TabsContent value="editor" className="p-1 sm:p-2 md:p-3 max-h-[calc(100vh-120px)] sm:max-h-[calc(100vh-130px)] overflow-hidden">
                      <ScrollArea className="h-[calc(100vh-170px)] sm:h-[calc(100vh-180px)] pr-1 sm:pr-2">
-                        <ResumeFormWrapper control={methods.control} />
+                        <ResumeFormWrapper />
                      </ScrollArea>
                   </TabsContent>
                   <TabsContent value="templates" className="p-1 sm:p-2 md:p-3 max-h-[calc(100vh-120px)] sm:max-h-[calc(100vh-130px)] overflow-hidden">
@@ -170,21 +224,39 @@ const ResumeBuilder: React.FC = () => {
                 </Button>
               </DialogClose>
             </DialogHeader>
-            <div className="flex-grow overflow-hidden"> {/* Container for ResumePreviewWrapper */}
+            <div className="flex-grow overflow-hidden">
               <ResumePreviewWrapper 
                 resumeData={resumeData} 
                 selectedTemplateId={selectedTemplate}
                 className="h-full bg-muted/30" 
               />
             </div>
-            <DialogFooter className="p-3 sm:p-4 border-t sticky bottom-0 bg-background z-10">
+            <DialogFooter className="p-3 sm:p-4 border-t sticky bottom-0 bg-background z-10 flex-wrap justify-center sm:justify-end gap-2">
               <Button variant="outline" onClick={() => setIsPreviewOpen(false)}>Close</Button>
-              <Button 
-                onClick={handleDialogExportPdf}
-                className="bg-gradient-to-r from-accent to-primary text-accent-foreground hover:from-accent/80 hover:to-primary/80 hover:shadow-lg active:scale-95 transition-all duration-150 ease-in-out transform hover:scale-[1.02]" // Kept unique style for this button
-              >
-                <Download className="mr-2 h-4 w-4" /> Download PDF
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button 
+                    className="bg-gradient-to-r from-accent to-primary text-accent-foreground hover:from-accent/80 hover:to-primary/80 hover:shadow-lg active:scale-95 transition-all duration-150 ease-in-out transform hover:scale-[1.02]"
+                  >
+                    <Download className="mr-2 h-4 w-4" /> Download <ChevronDown className="ml-2 h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={handleDialogExportPdf}>
+                    Download as PDF
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleDialogExportPng}>
+                    Download as PNG
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem disabled>
+                    Download as SVG (coming soon)
+                  </DropdownMenuItem>
+                  <DropdownMenuItem disabled>
+                    Download as DOC (coming soon)
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </DialogFooter>
           </DialogContent>
         </Dialog>

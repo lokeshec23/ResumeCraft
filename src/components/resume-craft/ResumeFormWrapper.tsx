@@ -1,3 +1,4 @@
+
 'use client';
 
 import type { ReactNode } from 'react';
@@ -25,7 +26,7 @@ const formSections: FormSectionConfig[] = [
   { name: 'Skills', icon: Wrench, component: SkillsSection, id: 'skills' },
 ];
 
-const ResumeFormWrapper: React.FC = () => {
+const ResumeFormWrapper: React.FC = () => { // Removed control prop
   return (
     <div className="space-y-6">
       {formSections.map((section) => {
