@@ -159,7 +159,7 @@ const ResumeBuilder: React.FC = () => {
   
   return (
     <FormProvider {...methods}>
-      <div className="flex flex-col min-h-screen bg-background">
+      <div className="flex flex-col h-screen bg-background"> {/* Changed min-h-screen to h-screen for fixed height */}
         <header className="bg-primary text-primary-foreground p-2 sm:p-3 shadow-md sticky top-0 z-50">
           <div className="container mx-auto flex flex-wrap justify-between items-center gap-2">
             <Link href="/" className="text-lg sm:text-xl font-bold flex items-center">
@@ -171,23 +171,23 @@ const ResumeBuilder: React.FC = () => {
                 <DropdownMenuTrigger asChild>
                   <Button 
                     variant="secondary"
-                    className="text-secondary-foreground bg-accent/20 hover:bg-accent/30 px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 sm:text-sm gap-1 [&_svg]:size-3.5"
+                    className="bg-accent/80 hover:bg-accent text-accent-foreground px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 sm:text-sm gap-1 [&_svg]:size-3.5 shadow-md hover:shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105"
                   >
                     <Download /> Download <ChevronDown className="ml-1 h-3 w-3" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={handleExportPdf}>
+                <DropdownMenuContent align="end" className="shadow-xl">
+                  <DropdownMenuItem onClick={handleExportPdf} className="hover:bg-accent/10">
                     Download as PDF
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleExportPng}>
+                  <DropdownMenuItem onClick={handleExportPng} className="hover:bg-accent/10">
                     Download as PNG
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem disabled>
+                  <DropdownMenuItem disabled className="opacity-50 cursor-not-allowed">
                     Download as SVG (coming soon)
                   </DropdownMenuItem>
-                  <DropdownMenuItem disabled>
+                  <DropdownMenuItem disabled className="opacity-50 cursor-not-allowed">
                     Download as DOC (coming soon)
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -217,7 +217,7 @@ const ResumeBuilder: React.FC = () => {
           </div>
         </header>
 
-        <main className="flex-grow flex flex-col md:flex-row gap-4 p-2 sm:p-4 overflow-hidden">
+        <main className="flex-grow flex flex-col md:flex-row gap-4 p-2 sm:p-4 overflow-hidden"> {/* overflow-hidden is key here */}
           {/* Left Pane: Editor/Templates */}
           <div className="w-full md:w-2/5 lg:w-1/3 xl:w-2/5 flex-shrink-0 flex flex-col">
             <Card className="flex-grow flex flex-col overflow-hidden shadow-lg">
@@ -231,12 +231,12 @@ const ResumeBuilder: React.FC = () => {
                   </TabsTrigger>
                 </TabsList>
                 <TabsContent value="editor" className="flex-grow overflow-hidden p-1 sm:p-2 md:p-3">
-                   <ScrollArea className="h-full pr-1 sm:pr-2">
+                   <ScrollArea className="h-full pr-1 sm:pr-2"> {/* h-full enables scroll within this area */}
                       <ResumeFormWrapper />
                    </ScrollArea>
                 </TabsContent>
                 <TabsContent value="templates" className="flex-grow overflow-hidden p-1 sm:p-2 md:p-3">
-                   <ScrollArea className="h-full pr-1 sm:pr-2">
+                   <ScrollArea className="h-full pr-1 sm:pr-2"> {/* h-full enables scroll within this area */}
                       <TemplateSelector selectedTemplate={selectedTemplate} onSelectTemplate={setSelectedTemplate} />
                    </ScrollArea>
                 </TabsContent>
@@ -257,7 +257,7 @@ const ResumeBuilder: React.FC = () => {
                  <ResumePreviewWrapper 
                     resumeData={resumeData} 
                     selectedTemplateId={selectedTemplate}
-                    className="h-full bg-muted/30" 
+                    className="h-full bg-muted/30" // h-full enables scroll within ResumePreviewWrapper
                   />
               </CardContent>
             </Card>
