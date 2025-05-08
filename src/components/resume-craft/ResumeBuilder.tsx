@@ -1,0 +1,182 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useForm, FormProvider } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import type { ResumeData, TemplateId } from '@/lib/resumeTypes';
+import { DEFAULT_RESUME_DATA, TEMPLATES, PREVIEW_CONTAINER_ID } from '@/lib/constants';
+import ResumeFormWrapper from './ResumeFormWrapper';
+import ResumePreviewWrapper from './ResumePreviewWrapper';
+import TemplateSelector from './TemplateSelector';
+import { Button } from '@/components/ui/button';
+import { Download, LayoutDashboard, Eye, Edit3, Share2, Palette } from 'lucide-react';
+import { exportToPdf } from '@/lib/pdfGenerator';
+import { useToast } from '@/hooks/use-toast';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Card, CardContent } from '@/components/ui/card';
+
+// Basic Zod schema (can be expanded for more detailed validation)
+const resumeSchema = z.object({
+  personalDetails: z.object({
+    fullName: z.string().min(1, 'Full name is required'),
+    email: z.string().email('Invalid email address'),
+    phoneNumber: z.string().min(1, 'Phone number is required'),
+    address: z.string().min(1, 'Address is required'),
+    linkedin: z.string().url().optional().or(z.literal('')),
+    github: z.string().url().optional().or(z.literal('')),
+    portfolio: z.string().url().optional().or(z.literal('')),
+    summary: z.string().optional(),
+  }),
+  education: z.array(z.object({
+    id: z.string(),
+    institution: z.string().min(1, 'Institution name is required'),
+    degree: z.string().min(1, 'Degree is required'),
+    fieldOfStudy: z.string().optional(),
+    startDate: z.string().min(1, "Start date is required"),
+    endDate: z.string().min(1, "End date is required"),
+    description: z.string().optional(),
+  })),
+  experience: z.array(z.object({
+    id: z.string(),
+    company: z.string().min(1, 'Company name is required'),
+    jobTitle: z.string().min(1, 'Job title is required'),
+    startDate: z.string().min(1, "Start date is required"),
+    endDate: z.string().min(1, "End date is required"),
+    responsibilities: z.array(z.string().min(1, "Responsibility cannot be empty")).min(1, "At least one responsibility is required"),
+  })),
+  projects: z.array(z.object({
+    id: z.string(),
+    name: z.string().min(1, 'Project name is required'),
+    description: z.string().min(1, 'Project description is required'),
+    technologies: z.array(z.string().min(1, "Technology cannot be empty")).min(1, "At least one technology is required"),
+    link: z.string().url().optional().or(z.literal('')),
+  })),
+  skills: z.array(z.object({
+    id: z.string(),
+    name: z.string().min(1, 'Skill name is required'),
+    category: z.string().optional(),
+  })),
+});
+
+const ResumeBuilder: React.FC = () => {
+  const [selectedTemplate, setSelectedTemplate] = useState<TemplateId>(TEMPLATES[0].id);
+  const { toast } = useToast();
+  const [mounted, setMounted] = useState(false);
+
+  const methods = useForm<ResumeData>({
+    resolver: zodResolver(resumeSchema),
+    defaultValues: DEFAULT_RESUME_DATA, // Use default data
+    mode: 'onChange', // Validate on change for live feedback
+  });
+
+  const resumeData = methods.watch(); // Watch for changes to update preview
+
+  useEffect(() => {
+    setMounted(true);
+    // Load saved data from localStorage if available (optional feature)
+    // const savedData = localStorage.getItem('resumeData');
+    // if (savedData) {
+    //   methods.reset(JSON.parse(savedData));
+    // }
+    // const savedTemplate = localStorage.getItem('selectedTemplate');
+    // if (savedTemplate) {
+    //   setSelectedTemplate(savedTemplate as TemplateId);
+    // }
+  }, [methods]);
+
+  // useEffect(() => {
+  //   // Save data to localStorage on change (optional feature)
+  //   if (mounted) {
+  //     localStorage.setItem('resumeData', JSON.stringify(resumeData));
+  //     localStorage.setItem('selectedTemplate', selectedTemplate);
+  //   }
+  // }, [resumeData, selectedTemplate, mounted]);
+
+  const handleExportPdf = async () => {
+    toast({ title: "Processing PDF", description: "Your resume is being generated..." });
+    try {
+      await exportToPdf(PREVIEW_CONTAINER_ID, `${resumeData.personalDetails.fullName.replace(/\s+/g, '_')}_Resume`);
+      toast({ title: "Success!", description: "Your resume has been downloaded as a PDF.", variant: "default" });
+    } catch (error) {
+      console.error("PDF Export Error:", error);
+      toast({ title: "Error", description: "Could not generate PDF. Please try again.", variant: "destructive" });
+    }
+  };
+
+  if (!mounted) {
+    return ( // Basic loading state or skeleton
+      <div className="flex items-center justify-center min-h-screen bg-background">
+        <p className="text-lg text-foreground">Loading ResumeCraft...</p>
+      </div>
+    );
+  }
+  
+  return (
+    <FormProvider {...methods}>
+      <div className="flex flex-col min-h-screen bg-background">
+        <header className="bg-primary text-primary-foreground p-4 shadow-md sticky top-0 z-50">
+          <div className="container mx-auto flex justify-between items-center">
+            <h1 className="text-2xl font-bold flex items-center">
+              <LayoutDashboard className="mr-2 h-7 w-7" /> ResumeCraft
+            </h1>
+            <div className="space-x-2">
+              <Button variant="secondary" onClick={handleExportPdf} className="bg-accent hover:bg-accent/90 text-accent-foreground">
+                <Download className="mr-2 h-4 w-4" /> Download PDF
+              </Button>
+              {/* Add more buttons here (e.g., Save, Share) if implementing those features */}
+            </div>
+          </div>
+        </header>
+
+        <main className="flex-grow container mx-auto p-4 grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* Left Panel: Form and Template Selector */}
+          <div className="lg:col-span-5 xl:col-span-4">
+            <Card className="shadow-lg h-full">
+              <CardContent className="p-0">
+                <Tabs defaultValue="editor" className="w-full">
+                  <TabsList className="grid w-full grid-cols-2 rounded-none rounded-t-lg">
+                    <TabsTrigger value="editor" className="py-3 data-[state=active]:bg-accent data-[state=active]:text-accent-foreground">
+                      <Edit3 className="mr-2 h-4 w-4" /> Editor
+                    </TabsTrigger>
+                    <TabsTrigger value="templates" className="py-3 data-[state=active]:bg-accent data-[state=active]:text-accent-foreground">
+                      <Palette className="mr-2 h-4 w-4" /> Templates
+                    </TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="editor" className="p-1 sm:p-2 md:p-4 max-h-[calc(100vh-150px)] overflow-hidden">
+                     <ScrollArea className="h-[calc(100vh-200px)] pr-3">
+                        <ResumeFormWrapper control={methods.control} />
+                     </ScrollArea>
+                  </TabsContent>
+                  <TabsContent value="templates" className="p-1 sm:p-2 md:p-4 max-h-[calc(100vh-150px)] overflow-hidden">
+                     <ScrollArea className="h-[calc(100vh-200px)] pr-3">
+                        <TemplateSelector selectedTemplate={selectedTemplate} onSelectTemplate={setSelectedTemplate} />
+                     </ScrollArea>
+                  </TabsContent>
+                </Tabs>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Right Panel: Live Preview */}
+          <div className="lg:col-span-7 xl:col-span-8">
+            <div className="sticky top-24"> {/* Make preview sticky */}
+              <ResumePreviewWrapper 
+                resumeData={resumeData} 
+                selectedTemplateId={selectedTemplate}
+                className="max-h-[calc(100vh-120px)]" 
+              />
+            </div>
+          </div>
+        </main>
+        
+        <footer className="bg-primary text-primary-foreground p-3 text-center text-xs">
+          <p>&copy; {new Date().getFullYear()} ResumeCraft. Built with Next.js & ShadCN UI.</p>
+        </footer>
+      </div>
+    </FormProvider>
+  );
+};
+
+export default ResumeBuilder;
