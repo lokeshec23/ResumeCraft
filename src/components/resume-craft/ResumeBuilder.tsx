@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -24,7 +23,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import html2canvas from 'html2canvas';
@@ -110,27 +108,29 @@ const ResumeBuilder: React.FC = () => {
       return;
     }
     try {
+      // Ensure the element and its parent are fully visible for capture
       const originalOverflow = input.style.overflow;
       const parentContainer = input.parentElement;
       let originalParentOverflow: string | undefined;
 
       if (parentContainer) {
         originalParentOverflow = parentContainer.style.overflow;
-        parentContainer.style.overflow = 'visible'; 
+        parentContainer.style.overflow = 'visible'; // Allow full content visibility
       }
       input.style.overflow = 'visible';
 
 
       const canvas = await html2canvas(input, {
-        scale: 2,
-        useCORS: true,
-        logging: process.env.NODE_ENV === 'development',
-        width: input.scrollWidth, 
-        height: input.scrollHeight, 
+        scale: 2, // Higher scale for better quality
+        useCORS: true, // If using external images
+        logging: process.env.NODE_ENV === 'development', // Enable logging in dev
+        width: input.scrollWidth, // Use scrollWidth for full content width
+        height: input.scrollHeight, // Use scrollHeight for full content height
         windowWidth: input.scrollWidth,
         windowHeight: input.scrollHeight,
       });
 
+      // Restore original styles
       input.style.overflow = originalOverflow; 
       if (parentContainer && originalParentOverflow !== undefined) {
         parentContainer.style.overflow = originalParentOverflow;
@@ -150,6 +150,8 @@ const ResumeBuilder: React.FC = () => {
 
 
   if (!mounted) {
+    // Avoid rendering anything complex server-side or before hydration
+    // This helps prevent hydration mismatches if theme or other client-side states are involved early
     return ( 
       <div className="flex items-center justify-center min-h-screen bg-background">
         <p className="text-lg text-foreground">Loading AI Resume Architect Editor...</p>
@@ -160,6 +162,7 @@ const ResumeBuilder: React.FC = () => {
   return (
     <FormProvider {...methods}>
       <div className="flex flex-col h-screen overflow-hidden bg-background"> {/* Added overflow-hidden, h-screen for fixed layout */}
+        {/* Header */}
         <header className="bg-primary text-primary-foreground p-2 sm:p-3 shadow-md sticky top-0 z-50">
           <div className="container mx-auto flex flex-wrap justify-between items-center gap-2">
             <Link href="/" className="text-lg sm:text-xl font-bold flex items-center">
@@ -219,8 +222,8 @@ const ResumeBuilder: React.FC = () => {
 
         <main className="flex-grow flex flex-col md:flex-row gap-4 p-2 sm:p-4 overflow-hidden"> {/* overflow-hidden is key here */}
           {/* Left Pane: Editor/Templates */}
-          <div className="w-full md:w-2/5 lg:w-1/3 xl:w-2/5 flex-shrink-0 flex flex-col">
-            <Card className="flex-grow flex flex-col overflow-hidden shadow-lg">
+          <div className="w-full md:w-2/5 lg:w-1/3 xl:w-2/5 flex-shrink-0 flex flex-col min-h-0"> {/* Added min-h-0 for proper flex sizing */}
+            <Card className="flex-grow flex flex-col overflow-hidden shadow-lg"> {/* min-h-0 could also be beneficial here if Card had flex issues */}
               <Tabs defaultValue="editor" className="w-full flex-grow flex flex-col">
                 <TabsList className="grid w-full grid-cols-2 rounded-none rounded-t-lg">
                   <TabsTrigger value="editor" className="py-2 sm:py-2.5 data-[state=active]:bg-accent data-[state=active]:text-accent-foreground text-xs sm:text-sm">
@@ -230,12 +233,12 @@ const ResumeBuilder: React.FC = () => {
                     <Palette className="mr-1 sm:mr-1.5 h-3.5 w-3.5" /> Templates
                   </TabsTrigger>
                 </TabsList>
-                <TabsContent value="editor" className="flex-grow overflow-hidden p-1 sm:p-2 md:p-3">
+                <TabsContent value="editor" className="flex-grow overflow-hidden min-h-0 p-1 sm:p-2 md:p-3"> {/* Added min-h-0 */}
                    <ScrollArea className="h-full pr-1 sm:pr-2"> {/* h-full enables scroll within this area */}
                       <ResumeFormWrapper />
                    </ScrollArea>
                 </TabsContent>
-                <TabsContent value="templates" className="flex-grow overflow-hidden p-1 sm:p-2 md:p-3">
+                <TabsContent value="templates" className="flex-grow overflow-hidden min-h-0 p-1 sm:p-2 md:p-3"> {/* Added min-h-0 for consistency */}
                    <ScrollArea className="h-full pr-1 sm:pr-2"> {/* h-full enables scroll within this area */}
                       <TemplateSelector selectedTemplate={selectedTemplate} onSelectTemplate={setSelectedTemplate} />
                    </ScrollArea>
@@ -269,4 +272,3 @@ const ResumeBuilder: React.FC = () => {
 };
 
 export default ResumeBuilder;
-    
