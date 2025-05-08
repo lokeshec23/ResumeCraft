@@ -20,7 +20,7 @@ const ProjectsSection: React.FC = () => {
       id: `proj-${Date.now()}`,
       name: '',
       description: '',
-      technologies: [''],
+      technologies: [], // Start with no technologies
       link: '',
     });
   };
@@ -71,7 +71,7 @@ const ProjectsSection: React.FC = () => {
           <FormItem>
             <FormLabel>Technologies Used</FormLabel>
             <div className="space-y-2">
-              {item.technologies.map((_, techIndex) => (
+              {item.technologies?.map((_, techIndex) => ( // Added optional chaining for safety
                 <div key={techIndex} className="flex items-center space-x-2">
                   <Input
                     {...register(`projects.${index}.technologies.${techIndex}` as const)}
@@ -94,6 +94,9 @@ const ProjectsSection: React.FC = () => {
             <Button type="button" variant="outline" size="sm" onClick={() => addTechnology(index)} className="mt-2 text-accent border-accent/50 hover:bg-accent/10 hover:text-accent">
               <Plus className="mr-2 h-3 w-3" /> Add Technology
             </Button>
+             {(control.getFieldState(`projects.${index}.technologies`)?.error) && (
+                <FormMessage>{control.getFieldState(`projects.${index}.technologies`)?.error?.root?.message}</FormMessage>
+            )}
           </FormItem>
 
           <FormField

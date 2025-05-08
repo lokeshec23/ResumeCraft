@@ -21,9 +21,9 @@ import { Card, CardContent } from '@/components/ui/card';
 const resumeSchema = z.object({
   personalDetails: z.object({
     fullName: z.string().min(1, 'Full name is required'),
-    email: z.string().email('Invalid email address'),
-    phoneNumber: z.string().min(1, 'Phone number is required'),
-    address: z.string().min(1, 'Address is required'),
+    email: z.string().email('Invalid email address').or(z.literal('')),
+    phoneNumber: z.string().optional(),
+    address: z.string().optional(),
     linkedin: z.string().url().optional().or(z.literal('')),
     github: z.string().url().optional().or(z.literal('')),
     portfolio: z.string().url().optional().or(z.literal('')),
@@ -44,13 +44,13 @@ const resumeSchema = z.object({
     jobTitle: z.string().min(1, 'Job title is required'),
     startDate: z.string().min(1, "Start date is required"),
     endDate: z.string().min(1, "End date is required"),
-    responsibilities: z.array(z.string().min(1, "Responsibility cannot be empty")).min(1, "At least one responsibility is required"),
+    responsibilities: z.array(z.string().min(1, "Responsibility cannot be empty")).min(0), // Allow 0 responsibilities initially
   })),
   projects: z.array(z.object({
     id: z.string(),
     name: z.string().min(1, 'Project name is required'),
     description: z.string().min(1, 'Project description is required'),
-    technologies: z.array(z.string().min(1, "Technology cannot be empty")).min(1, "At least one technology is required"),
+    technologies: z.array(z.string().min(1, "Technology cannot be empty")).min(0), // Allow 0 technologies initially
     link: z.string().url().optional().or(z.literal('')),
   })),
   skills: z.array(z.object({
@@ -67,27 +67,36 @@ const ResumeBuilder: React.FC = () => {
 
   const methods = useForm<ResumeData>({
     resolver: zodResolver(resumeSchema),
-    defaultValues: DEFAULT_RESUME_DATA, // Use default data
-    mode: 'onChange', // Validate on change for live feedback
+    defaultValues: DEFAULT_RESUME_DATA, 
+    mode: 'onChange', 
   });
 
-  const resumeData = methods.watch(); // Watch for changes to update preview
+  const resumeData = methods.watch(); 
 
   useEffect(() => {
     setMounted(true);
-    // Load saved data from localStorage if available (optional feature)
+    // Example of loading from localStorage if desired
     // const savedData = localStorage.getItem('resumeData');
     // if (savedData) {
-    //   methods.reset(JSON.parse(savedData));
+    //   try {
+    //     const parsedData = JSON.parse(savedData);
+    //     // Ensure data structure compatibility before resetting
+    //     methods.reset(parsedData);
+    //   } catch (e) {
+    //     console.error("Failed to parse saved resume data", e);
+    //     // Fallback to default if parsing fails
+    //     methods.reset(DEFAULT_RESUME_DATA);
+    //   }
+    // } else {
+    //    methods.reset(DEFAULT_RESUME_DATA); // Ensure form has defaults if nothing in LS
     // }
     // const savedTemplate = localStorage.getItem('selectedTemplate');
-    // if (savedTemplate) {
+    // if (savedTemplate && TEMPLATES.find(t => t.id === savedTemplate)) {
     //   setSelectedTemplate(savedTemplate as TemplateId);
     // }
   }, [methods]);
 
   // useEffect(() => {
-  //   // Save data to localStorage on change (optional feature)
   //   if (mounted) {
   //     localStorage.setItem('resumeData', JSON.stringify(resumeData));
   //     localStorage.setItem('selectedTemplate', selectedTemplate);
@@ -97,7 +106,7 @@ const ResumeBuilder: React.FC = () => {
   const handleExportPdf = async () => {
     toast({ title: "Processing PDF", description: "Your resume is being generated..." });
     try {
-      await exportToPdf(PREVIEW_CONTAINER_ID, `${resumeData.personalDetails.fullName.replace(/\s+/g, '_')}_Resume`);
+      await exportToPdf(PREVIEW_CONTAINER_ID, `${resumeData.personalDetails.fullName?.replace(/\s+/g, '_') || 'Resume'}_Resume`);
       toast({ title: "Success!", description: "Your resume has been downloaded as a PDF.", variant: "default" });
     } catch (error) {
       console.error("PDF Export Error:", error);
@@ -106,7 +115,7 @@ const ResumeBuilder: React.FC = () => {
   };
 
   if (!mounted) {
-    return ( // Basic loading state or skeleton
+    return ( 
       <div className="flex items-center justify-center min-h-screen bg-background">
         <p className="text-lg text-foreground">Loading ResumeCraft...</p>
       </div>
@@ -125,13 +134,11 @@ const ResumeBuilder: React.FC = () => {
               <Button variant="secondary" onClick={handleExportPdf} className="bg-accent hover:bg-accent/90 text-accent-foreground">
                 <Download className="mr-2 h-4 w-4" /> Download PDF
               </Button>
-              {/* Add more buttons here (e.g., Save, Share) if implementing those features */}
             </div>
           </div>
         </header>
 
         <main className="flex-grow container mx-auto p-4 grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Left Panel: Form and Template Selector */}
           <div className="lg:col-span-5 xl:col-span-4">
             <Card className="shadow-lg h-full">
               <CardContent className="p-0">
@@ -159,9 +166,8 @@ const ResumeBuilder: React.FC = () => {
             </Card>
           </div>
 
-          {/* Right Panel: Live Preview */}
           <div className="lg:col-span-7 xl:col-span-8">
-            <div className="sticky top-24"> {/* Make preview sticky */}
+            <div className="sticky top-24"> 
               <ResumePreviewWrapper 
                 resumeData={resumeData} 
                 selectedTemplateId={selectedTemplate}

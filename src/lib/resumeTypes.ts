@@ -52,7 +52,7 @@ export interface ResumeData {
   skills: SkillEntry[];
 }
 
-export type TemplateId = 'default' | 'modern';
+export type TemplateId = 'default' | 'modern' | 'creative' | 'technical';
 
 export interface ResumeTemplateComponentProps {
   data: ResumeData;
@@ -64,3 +64,4 @@ export interface ResumeTemplate {
   component: React.FC<ResumeTemplateComponentProps>;
   thumbnailUrl?: string; // For visual selection
 }
+

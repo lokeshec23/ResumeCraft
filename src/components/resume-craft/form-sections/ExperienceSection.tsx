@@ -22,7 +22,7 @@ const ExperienceSection: React.FC = () => {
       jobTitle: '',
       startDate: '',
       endDate: '',
-      responsibilities: [''], // Add one empty responsibility by default
+      responsibilities: [], // Start with no responsibilities
     });
   };
 
@@ -102,12 +102,12 @@ const ExperienceSection: React.FC = () => {
           <FormItem>
             <FormLabel>Responsibilities</FormLabel>
             <div className="space-y-2">
-              {item.responsibilities.map((_, respIndex) => (
-                <div key={respIndex} className="flex items-start space-x-2"> {/* Changed items-center to items-start for better alignment with multi-line textarea */}
+              {item.responsibilities?.map((_, respIndex) => ( // Added optional chaining for safety
+                <div key={respIndex} className="flex items-start space-x-2"> 
                   <Textarea
                     {...register(`experience.${index}.responsibilities.${respIndex}` as const)}
                     placeholder={`Responsibility ${respIndex + 1}`}
-                    className="flex-grow" // Will use min-h-[80px] from base Textarea component
+                    className="flex-grow" 
                   />
                   <Button
                     type="button"
@@ -125,6 +125,9 @@ const ExperienceSection: React.FC = () => {
             <Button type="button" variant="outline" size="sm" onClick={() => addResponsibility(index)} className="mt-2 text-accent border-accent/50 hover:bg-accent/10 hover:text-accent">
               <Plus className="mr-2 h-3 w-3" /> Add Responsibility
             </Button>
+             {(control.getFieldState(`experience.${index}.responsibilities`)?.error) && (
+              <FormMessage>{control.getFieldState(`experience.${index}.responsibilities`)?.error?.root?.message}</FormMessage>
+            )}
           </FormItem>
 
           <Button
