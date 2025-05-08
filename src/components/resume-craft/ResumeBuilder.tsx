@@ -126,7 +126,7 @@ const ResumeBuilder: React.FC = () => {
     <FormProvider {...methods}>
       <div className="flex flex-col min-h-screen bg-background">
         <header className="bg-primary text-primary-foreground p-4 shadow-md sticky top-0 z-50">
-          <div className="container mx-auto flex justify-between items-center">
+          <div className="container mx-auto flex flex-wrap justify-between items-center gap-2 sm:gap-4">
             <h1 className="text-2xl font-bold flex items-center">
               <LayoutDashboard className="mr-2 h-7 w-7" /> ResumeCraft
             </h1>
