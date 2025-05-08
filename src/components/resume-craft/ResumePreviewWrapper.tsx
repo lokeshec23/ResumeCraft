@@ -20,9 +20,13 @@ const ResumePreviewWrapper: React.FC<ResumePreviewWrapperProps> = ({ resumeData,
   }
 
   return (
-    <ScrollArea className={cn("h-full rounded-lg", className)}> {/* Removed shadow-xl and bg-card, dialog provides bg */}
-      <div id={PREVIEW_CONTAINER_ID} className="p-4 sm:p-6 print:p-0 print:shadow-none print:bg-white flex justify-center items-start"> {/* Consistent padding, flex to center content if smaller */}
-        <div className="aspect-[210/297] w-full max-w-full mx-auto overflow-hidden print:overflow-visible bg-card shadow-lg print:shadow-none"> {/* A4 aspect ratio with card background and shadow */}
+    // The className (e.g., h-full) is applied to the ScrollArea
+    // bg-muted/30 provides a slightly different background for the scroll area itself
+    <ScrollArea className={cn("h-full rounded-b-lg", className)}> 
+      {/* This div is the direct child of ScrollArea's viewport, providing padding for the "paper" */}
+      <div id={PREVIEW_CONTAINER_ID} className="p-2 sm:p-4 print:p-0 print:shadow-none print:bg-white flex justify-center items-start">
+        {/* This div represents the "paper" with A4 aspect ratio, background, and shadow */}
+        <div className="aspect-[210/297] w-full max-w-full mx-auto overflow-hidden print:overflow-visible bg-card shadow-lg print:shadow-none">
           <SelectedTemplateComponent data={resumeData} />
         </div>
       </div>
@@ -31,5 +35,4 @@ const ResumePreviewWrapper: React.FC<ResumePreviewWrapperProps> = ({ resumeData,
 };
 
 export default ResumePreviewWrapper;
-
     

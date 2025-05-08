@@ -16,18 +16,10 @@ import { exportToPdf } from '@/lib/pdfGenerator';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ThemeToggleButton } from '@/components/theme/ThemeToggleButton';
 import { useAuth } from '@/hooks/useAuth';
 import Link from 'next/link';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-  DialogClose,
-} from '@/components/ui/dialog';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -85,7 +77,6 @@ const ResumeBuilder: React.FC = () => {
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateId>(TEMPLATES[0].id);
   const { toast } = useToast();
   const [mounted, setMounted] = useState(false);
-  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const { user, isLoggedIn, logout } = useAuth();
 
   const methods = useForm<ResumeData>({
@@ -100,7 +91,7 @@ const ResumeBuilder: React.FC = () => {
     setMounted(true);
   }, []);
 
-  const handleDialogExportPdf = async () => {
+  const handleExportPdf = async () => {
     toast({ title: "Processing PDF", description: "Your resume is being generated..." });
     try {
       await exportToPdf(PREVIEW_CONTAINER_ID, `${resumeData.personalDetails.fullName?.replace(/\s+/g, '_') || 'Resume'}_Resume`);
@@ -111,7 +102,7 @@ const ResumeBuilder: React.FC = () => {
     }
   };
 
-  const handleDialogExportPng = async () => {
+  const handleExportPng = async () => {
     toast({ title: "Processing PNG", description: "Your resume is being generated..." });
     const input = document.getElementById(PREVIEW_CONTAINER_ID);
     if (!input) {
@@ -119,7 +110,6 @@ const ResumeBuilder: React.FC = () => {
       return;
     }
     try {
-      // Ensure content is fully visible for canvas capture
       const originalOverflow = input.style.overflow;
       const parentContainer = input.parentElement;
       let originalParentOverflow: string | undefined;
@@ -132,16 +122,16 @@ const ResumeBuilder: React.FC = () => {
 
 
       const canvas = await html2canvas(input, {
-        scale: 2, // Higher scale for better quality
-        useCORS: true, // If using external images
+        scale: 2,
+        useCORS: true,
         logging: process.env.NODE_ENV === 'development',
-        width: input.scrollWidth, // Capture full content width
-        height: input.scrollHeight, // Capture full content height
+        width: input.scrollWidth, 
+        height: input.scrollHeight, 
         windowWidth: input.scrollWidth,
         windowHeight: input.scrollHeight,
       });
 
-      input.style.overflow = originalOverflow; // Restore original style
+      input.style.overflow = originalOverflow; 
       if (parentContainer && originalParentOverflow !== undefined) {
         parentContainer.style.overflow = originalParentOverflow;
       }
@@ -162,7 +152,6 @@ const ResumeBuilder: React.FC = () => {
   if (!mounted) {
     return ( 
       <div className="flex items-center justify-center min-h-screen bg-background">
-        {/* The parent page (src/app/page.tsx) handles the main loader if not logged in */}
         <p className="text-lg text-foreground">Loading AI Resume Architect Editor...</p>
       </div>
     );
@@ -178,13 +167,31 @@ const ResumeBuilder: React.FC = () => {
             </Link>
             <div className="flex items-center space-x-1 sm:space-x-2">
               <ThemeToggleButton />
-              <Button 
-                variant="secondary"
-                onClick={() => setIsPreviewOpen(true)}
-                className="text-secondary-foreground bg-accent/20 hover:bg-accent/30 px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 sm:text-sm gap-1 [&_svg]:size-3.5"
-              >
-                <Eye /> Preview
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button 
+                    variant="secondary"
+                    className="text-secondary-foreground bg-accent/20 hover:bg-accent/30 px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 sm:text-sm gap-1 [&_svg]:size-3.5"
+                  >
+                    <Download /> Download <ChevronDown className="ml-1 h-3 w-3" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={handleExportPdf}>
+                    Download as PDF
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleExportPng}>
+                    Download as PNG
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem disabled>
+                    Download as SVG (coming soon)
+                  </DropdownMenuItem>
+                  <DropdownMenuItem disabled>
+                    Download as DOC (coming soon)
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
               {isLoggedIn && user && (
                 <>
                   <span className="text-xs sm:text-sm hidden md:flex items-center gap-1 text-primary-foreground/80">
@@ -210,81 +217,52 @@ const ResumeBuilder: React.FC = () => {
           </div>
         </header>
 
-        <main className="flex-grow container mx-auto p-2 sm:p-4 flex justify-center">
-          <div className="w-full md:max-w-2xl lg:max-w-3xl xl:max-w-4xl">
-            <Card className="shadow-lg">
-              <CardContent className="p-0">
-                <Tabs defaultValue="editor" className="w-full">
-                  <TabsList className="grid w-full grid-cols-2 rounded-none rounded-t-lg">
-                    <TabsTrigger value="editor" className="py-2 sm:py-2.5 data-[state=active]:bg-accent data-[state=active]:text-accent-foreground text-xs sm:text-sm">
-                      <Edit3 className="mr-1 sm:mr-1.5 h-3.5 w-3.5" /> Editor
-                    </TabsTrigger>
-                    <TabsTrigger value="templates" className="py-2 sm:py-2.5 data-[state=active]:bg-accent data-[state=active]:text-accent-foreground text-xs sm:text-sm">
-                      <Palette className="mr-1 sm:mr-1.5 h-3.5 w-3.5" /> Templates
-                    </TabsTrigger>
-                  </TabsList>
-                  <TabsContent value="editor" className="p-1 sm:p-2 md:p-3 max-h-[calc(100vh-120px)] sm:max-h-[calc(100vh-130px)] overflow-hidden">
-                     <ScrollArea className="h-[calc(100vh-170px)] sm:h-[calc(100vh-180px)] pr-1 sm:pr-2">
-                        <ResumeFormWrapper />
-                     </ScrollArea>
-                  </TabsContent>
-                  <TabsContent value="templates" className="p-1 sm:p-2 md:p-3 max-h-[calc(100vh-120px)] sm:max-h-[calc(100vh-130px)] overflow-hidden">
-                     <ScrollArea className="h-[calc(100vh-170px)] sm:h-[calc(100vh-180px)] pr-1 sm:pr-2">
-                        <TemplateSelector selectedTemplate={selectedTemplate} onSelectTemplate={setSelectedTemplate} />
-                     </ScrollArea>
-                  </TabsContent>
-                </Tabs>
+        <main className="flex-grow flex flex-col md:flex-row gap-4 p-2 sm:p-4 overflow-hidden">
+          {/* Left Pane: Editor/Templates */}
+          <div className="w-full md:w-2/5 lg:w-1/3 xl:w-2/5 flex-shrink-0 flex flex-col">
+            <Card className="flex-grow flex flex-col overflow-hidden shadow-lg">
+              <Tabs defaultValue="editor" className="w-full flex-grow flex flex-col">
+                <TabsList className="grid w-full grid-cols-2 rounded-none rounded-t-lg">
+                  <TabsTrigger value="editor" className="py-2 sm:py-2.5 data-[state=active]:bg-accent data-[state=active]:text-accent-foreground text-xs sm:text-sm">
+                    <Edit3 className="mr-1 sm:mr-1.5 h-3.5 w-3.5" /> Editor
+                  </TabsTrigger>
+                  <TabsTrigger value="templates" className="py-2 sm:py-2.5 data-[state=active]:bg-accent data-[state=active]:text-accent-foreground text-xs sm:text-sm">
+                    <Palette className="mr-1 sm:mr-1.5 h-3.5 w-3.5" /> Templates
+                  </TabsTrigger>
+                </TabsList>
+                <TabsContent value="editor" className="flex-grow overflow-hidden p-1 sm:p-2 md:p-3">
+                   <ScrollArea className="h-full pr-1 sm:pr-2">
+                      <ResumeFormWrapper />
+                   </ScrollArea>
+                </TabsContent>
+                <TabsContent value="templates" className="flex-grow overflow-hidden p-1 sm:p-2 md:p-3">
+                   <ScrollArea className="h-full pr-1 sm:pr-2">
+                      <TemplateSelector selectedTemplate={selectedTemplate} onSelectTemplate={setSelectedTemplate} />
+                   </ScrollArea>
+                </TabsContent>
+              </Tabs>
+            </Card>
+          </div>
+
+          {/* Right Pane: Live Preview */}
+          <div className="flex-grow flex flex-col min-h-0"> {/* min-h-0 is important for flex item with overflow */}
+            <Card className="flex-grow flex flex-col overflow-hidden shadow-lg">
+              <CardHeader className="p-3 sm:p-4 border-b">
+                <CardTitle className="text-base sm:text-lg flex items-center">
+                    <Eye className="mr-2 h-4 w-4 sm:h-5 sm:w-5 text-primary"/>
+                    Live Preview
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="flex-grow p-0 overflow-hidden"> {/* Remove padding, ResumePreviewWrapper handles it */}
+                 <ResumePreviewWrapper 
+                    resumeData={resumeData} 
+                    selectedTemplateId={selectedTemplate}
+                    className="h-full bg-muted/30" 
+                  />
               </CardContent>
             </Card>
           </div>
         </main>
-        
-        <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
-          <DialogContent className="max-w-[850px] w-[90vw] h-[90vh] flex flex-col p-0 sm:p-0 rounded-lg shadow-2xl">
-            <DialogHeader className="p-3 sm:p-4 border-b sticky top-0 bg-background z-10">
-              <DialogTitle className="text-lg">Resume Preview</DialogTitle>
-              <DialogClose asChild>
-                <Button variant="ghost" size="icon" className="absolute right-2 top-2 sm:right-3 sm:top-2.5">
-                  <X className="h-5 w-5" />
-                </Button>
-              </DialogClose>
-            </DialogHeader>
-            <div className="flex-grow overflow-hidden">
-              <ResumePreviewWrapper 
-                resumeData={resumeData} 
-                selectedTemplateId={selectedTemplate}
-                className="h-full bg-muted/30" 
-              />
-            </div>
-            <DialogFooter className="p-3 sm:p-4 border-t sticky bottom-0 bg-background z-10 flex flex-wrap justify-center sm:justify-end items-end gap-2">
-              <Button variant="outline" onClick={() => setIsPreviewOpen(false)}>Close</Button>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button 
-                    className="bg-gradient-to-r from-accent to-primary text-accent-foreground hover:from-accent/80 hover:to-primary/80 hover:shadow-lg active:scale-95 transition-all duration-150 ease-in-out transform hover:scale-[1.02]"
-                  >
-                    <Download className="mr-2 h-4 w-4" /> Download <ChevronDown className="ml-2 h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={handleDialogExportPdf}>
-                    Download as PDF
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleDialogExportPng}>
-                    Download as PNG
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem disabled>
-                    Download as SVG (coming soon)
-                  </DropdownMenuItem>
-                  <DropdownMenuItem disabled>
-                    Download as DOC (coming soon)
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
       </div>
     </FormProvider>
   );
