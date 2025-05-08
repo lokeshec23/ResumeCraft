@@ -1,5 +1,6 @@
+
 import type {Metadata} from 'next';
-import { Inter } from 'next/font/google'; // Changed from Geist to Inter for a more common professional look
+import { Inter } from 'next/font/google';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from '@/components/theme/ThemeProvider';
@@ -20,8 +21,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning> {/* Added suppressHydrationWarning for potential theme/client-side state issues */}
-      <body className={`${inter.variable} font-sans antialiased`}> {/* Use font-sans for Inter */}
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${inter.variable} font-sans antialiased`}>
         <ThemeProvider
             attribute="class"
             defaultTheme="system"
