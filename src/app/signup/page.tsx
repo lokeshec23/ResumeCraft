@@ -45,7 +45,7 @@ export default function SignupPage() {
 
   useEffect(() => {
     if (!authLoading && isLoggedIn) {
-      router.replace('/'); // Redirect to home page (ResumeBuilder)
+      router.replace('/dashboard'); // Redirect to dashboard page
     }
   }, [isLoggedIn, authLoading, router]);
 
@@ -53,8 +53,8 @@ export default function SignupPage() {
     setIsSubmitting(true);
     const success = await signup(data.email, data.password);
     if (success) {
-      toast({ title: 'Signup Successful', description: 'Redirecting...' });
-      // Redirection is handled by the useEffect hook
+      toast({ title: 'Signup Successful', description: 'Redirecting to dashboard...' });
+      // Redirection is handled by the useAuth hook or the useEffect above
     } else {
       toast({
         title: 'Signup Failed',
@@ -144,3 +144,4 @@ export default function SignupPage() {
     </div>
   );
 }
+
