@@ -32,9 +32,7 @@ export const DEFAULT_RESUME_DATA: ResumeData = {
       startDate: '2020',
       endDate: 'Present',
       responsibilities: [
-        'Developed and maintained web applications using React and Node.js.',
-        'Collaborated with cross-functional teams to deliver high-quality software.',
-        'Participated in code reviews and contributed to a CI/CD pipeline.',
+        '', // Default to one empty responsibility
       ],
     },
   ],

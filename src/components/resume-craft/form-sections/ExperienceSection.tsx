@@ -22,7 +22,7 @@ const ExperienceSection: React.FC = () => {
       jobTitle: '',
       startDate: '',
       endDate: '',
-      responsibilities: [''],
+      responsibilities: [''], // Add one empty responsibility by default
     });
   };
 
@@ -103,12 +103,11 @@ const ExperienceSection: React.FC = () => {
             <FormLabel>Responsibilities</FormLabel>
             <div className="space-y-2">
               {item.responsibilities.map((_, respIndex) => (
-                <div key={respIndex} className="flex items-center space-x-2">
+                <div key={respIndex} className="flex items-start space-x-2"> {/* Changed items-center to items-start for better alignment with multi-line textarea */}
                   <Textarea
                     {...register(`experience.${index}.responsibilities.${respIndex}` as const)}
                     placeholder={`Responsibility ${respIndex + 1}`}
-                    rows={1}
-                    className="flex-grow"
+                    className="flex-grow" // Will use min-h-[80px] from base Textarea component
                   />
                   <Button
                     type="button"
