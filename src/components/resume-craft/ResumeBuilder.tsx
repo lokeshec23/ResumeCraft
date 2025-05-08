@@ -177,7 +177,7 @@ const ResumeBuilder: React.FC = () => {
               <Button 
                 variant="secondary"
                 onClick={() => setIsPreviewOpen(true)}
-                className="text-secondary-foreground hover:bg-secondary/80 px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 sm:text-sm gap-1 [&_svg]:size-3.5"
+                className="text-secondary-foreground bg-accent/20 hover:bg-accent/30 px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 sm:text-sm gap-1 [&_svg]:size-3.5"
               >
                 <Eye /> Preview
               </Button>
@@ -231,7 +231,7 @@ const ResumeBuilder: React.FC = () => {
                 className="h-full bg-muted/30" 
               />
             </div>
-            <DialogFooter className="p-3 sm:p-4 border-t sticky bottom-0 bg-background z-10 flex-wrap justify-center sm:justify-end gap-2">
+            <DialogFooter className="p-3 sm:p-4 border-t sticky bottom-0 bg-background z-10 flex flex-wrap justify-center sm:justify-end items-end gap-2">
               <Button variant="outline" onClick={() => setIsPreviewOpen(false)}>Close</Button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
