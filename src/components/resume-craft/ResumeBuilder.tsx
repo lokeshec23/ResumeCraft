@@ -11,7 +11,7 @@ import ResumeFormWrapper from './ResumeFormWrapper';
 import ResumePreviewWrapper from './ResumePreviewWrapper';
 import TemplateSelector from './TemplateSelector';
 import { Button } from '@/components/ui/button';
-import { Download, LayoutDashboard, Eye, Edit3, Share2, Palette, Bot } from 'lucide-react';
+import { Download, Edit3, Palette, Bot } from 'lucide-react';
 import { exportToPdf } from '@/lib/pdfGenerator';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -127,15 +127,15 @@ const ResumeBuilder: React.FC = () => {
   return (
     <FormProvider {...methods}>
       <div className="flex flex-col min-h-screen bg-background">
-        <header className="bg-primary text-primary-foreground p-4 shadow-md sticky top-0 z-50">
-          <div className="container mx-auto flex flex-wrap justify-between items-center gap-2 sm:gap-4">
-            <h1 className="text-xl sm:text-2xl font-bold flex items-center">
-              <Bot className="mr-2 h-6 w-6 sm:h-7 sm:w-7" /> AI Resume Architect
+        <header className="bg-primary text-primary-foreground p-2 sm:p-3 shadow-md sticky top-0 z-50">
+          <div className="container mx-auto flex flex-wrap justify-between items-center gap-2">
+            <h1 className="text-lg sm:text-xl font-bold flex items-center">
+              <Bot className="mr-1.5 h-5 w-5 sm:h-6 sm:w-6" /> AI Resume Architect
             </h1>
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-1 sm:space-x-2">
               <ThemeToggleButton />
-              <Button variant="secondary" onClick={handleExportPdf} className="bg-accent hover:bg-accent/90 text-accent-foreground px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm">
-                <Download className="mr-1 sm:mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4" /> Download PDF
+              <Button variant="secondary" onClick={handleExportPdf} className="bg-accent hover:bg-accent/90 text-accent-foreground px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 sm:text-sm">
+                <Download className="mr-1 h-3.5 w-3.5" /> Download PDF
               </Button>
             </div>
           </div>
@@ -147,20 +147,20 @@ const ResumeBuilder: React.FC = () => {
               <CardContent className="p-0">
                 <Tabs defaultValue="editor" className="w-full">
                   <TabsList className="grid w-full grid-cols-2 rounded-none rounded-t-lg">
-                    <TabsTrigger value="editor" className="py-2.5 sm:py-3 data-[state=active]:bg-accent data-[state=active]:text-accent-foreground text-xs sm:text-sm">
-                      <Edit3 className="mr-1.5 sm:mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4" /> Editor
+                    <TabsTrigger value="editor" className="py-2 sm:py-2.5 data-[state=active]:bg-accent data-[state=active]:text-accent-foreground text-xs sm:text-sm">
+                      <Edit3 className="mr-1 sm:mr-1.5 h-3.5 w-3.5" /> Editor
                     </TabsTrigger>
-                    <TabsTrigger value="templates" className="py-2.5 sm:py-3 data-[state=active]:bg-accent data-[state=active]:text-accent-foreground text-xs sm:text-sm">
-                      <Palette className="mr-1.5 sm:mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4" /> Templates
+                    <TabsTrigger value="templates" className="py-2 sm:py-2.5 data-[state=active]:bg-accent data-[state=active]:text-accent-foreground text-xs sm:text-sm">
+                      <Palette className="mr-1 sm:mr-1.5 h-3.5 w-3.5" /> Templates
                     </TabsTrigger>
                   </TabsList>
-                  <TabsContent value="editor" className="p-1 sm:p-2 md:p-4 max-h-[calc(100vh-150px)] overflow-hidden">
-                     <ScrollArea className="h-[calc(100vh-200px)] pr-2 sm:pr-3">
+                  <TabsContent value="editor" className="p-1 sm:p-2 md:p-3 max-h-[calc(100vh-120px)] sm:max-h-[calc(100vh-130px)] overflow-hidden">
+                     <ScrollArea className="h-[calc(100vh-170px)] sm:h-[calc(100vh-180px)] pr-1 sm:pr-2">
                         <ResumeFormWrapper control={methods.control} />
                      </ScrollArea>
                   </TabsContent>
-                  <TabsContent value="templates" className="p-1 sm:p-2 md:p-4 max-h-[calc(100vh-150px)] overflow-hidden">
-                     <ScrollArea className="h-[calc(100vh-200px)] pr-2 sm:pr-3">
+                  <TabsContent value="templates" className="p-1 sm:p-2 md:p-3 max-h-[calc(100vh-120px)] sm:max-h-[calc(100vh-130px)] overflow-hidden">
+                     <ScrollArea className="h-[calc(100vh-170px)] sm:h-[calc(100vh-180px)] pr-1 sm:pr-2">
                         <TemplateSelector selectedTemplate={selectedTemplate} onSelectTemplate={setSelectedTemplate} />
                      </ScrollArea>
                   </TabsContent>
@@ -170,17 +170,16 @@ const ResumeBuilder: React.FC = () => {
           </div>
 
           <div className="lg:col-span-7 xl:col-span-8">
-            <div className="sticky top-20 sm:top-24"> 
+            <div className="sticky top-[calc(theme(spacing.16)_+_1px)] sm:top-[calc(theme(spacing.20)_+_1px)]"> {/* Adjust top based on new header height */}
               <ResumePreviewWrapper 
                 resumeData={resumeData} 
                 selectedTemplateId={selectedTemplate}
-                className="max-h-[calc(100vh-100px)] sm:max-h-[calc(100vh-120px)]" 
+                className="max-h-[calc(100vh-80px)] sm:max-h-[calc(100vh-100px)]" 
               />
             </div>
           </div>
         </main>
         
-        {/* Footer removed as per user request */}
       </div>
     </FormProvider>
   );
