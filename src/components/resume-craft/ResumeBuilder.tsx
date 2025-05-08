@@ -88,31 +88,6 @@ const ResumeBuilder: React.FC = () => {
     setMounted(true);
   }, []);
 
-
-  const handleExportPdf = async () => {
-    if (!isPreviewOpen) {
-      // Ensure preview is rendered for PDF generation if PDF is triggered from header
-      // A more robust solution might involve rendering preview off-screen or ensuring dialog is open
-      // For now, we'll rely on the preview dialog being the primary source for PDF export
-      toast({ title: "Open Preview", description: "Please open the preview window first to download the PDF.", variant: "default" });
-      setIsPreviewOpen(true); // Open preview if not already
-      // Wait for dialog to open and content to render, this is a bit tricky
-      // A better UX is to have download button primarily in the preview dialog
-      // Or disable header download if preview not open / make it open preview
-      // For now, let's assume this simple toast and open is a first step.
-      return; 
-    }
-
-    toast({ title: "Processing PDF", description: "Your resume is being generated..." });
-    try {
-      await exportToPdf(PREVIEW_CONTAINER_ID, `${resumeData.personalDetails.fullName?.replace(/\s+/g, '_') || 'Resume'}_Resume`);
-      toast({ title: "Success!", description: "Your resume has been downloaded as a PDF.", variant: "default" });
-    } catch (error) {
-      console.error("PDF Export Error:", error);
-      toast({ title: "Error", description: "Could not generate PDF. Please try again.", variant: "destructive" });
-    }
-  };
-  
   const handleDialogExportPdf = async () => {
     toast({ title: "Processing PDF", description: "Your resume is being generated..." });
     try {
@@ -145,18 +120,13 @@ const ResumeBuilder: React.FC = () => {
             <div className="flex items-center space-x-1 sm:space-x-2">
               <ThemeToggleButton />
               <Button 
-                variant="outline"
+                variant="secondary" // Changed variant for different color
                 onClick={() => setIsPreviewOpen(true)}
-                className="text-primary-foreground border-primary-foreground/30 hover:bg-primary-foreground/20 hover:text-primary-foreground px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 sm:text-sm gap-1 [&_svg]:size-3.5"
+                className="text-secondary-foreground hover:bg-secondary/80 px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 sm:text-sm gap-1 [&_svg]:size-3.5"
               >
                 <Eye /> Preview
               </Button>
-              <Button 
-                onClick={handleExportPdf} 
-                className="bg-gradient-to-r from-accent to-primary text-accent-foreground hover:from-accent/80 hover:to-primary/80 hover:shadow-lg active:scale-95 transition-all duration-150 ease-in-out transform hover:scale-[1.02] px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 sm:text-sm gap-1 [&_svg]:size-3.5"
-              >
-                <Download /> Download PDF
-              </Button>
+              {/* Download button removed from header */}
             </div>
           </div>
         </header>
@@ -211,7 +181,7 @@ const ResumeBuilder: React.FC = () => {
               <Button variant="outline" onClick={() => setIsPreviewOpen(false)}>Close</Button>
               <Button 
                 onClick={handleDialogExportPdf}
-                className="bg-accent hover:bg-accent/90 text-accent-foreground"
+                className="bg-gradient-to-r from-accent to-primary text-accent-foreground hover:from-accent/80 hover:to-primary/80 hover:shadow-lg active:scale-95 transition-all duration-150 ease-in-out transform hover:scale-[1.02]" // Kept unique style for this button
               >
                 <Download className="mr-2 h-4 w-4" /> Download PDF
               </Button>
@@ -224,5 +194,4 @@ const ResumeBuilder: React.FC = () => {
 };
 
 export default ResumeBuilder;
-
     
