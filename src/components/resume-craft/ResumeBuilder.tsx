@@ -17,6 +17,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Card, CardContent } from '@/components/ui/card';
+import { ThemeToggleButton } from '@/components/theme/ThemeToggleButton';
 
 // Basic Zod schema (can be expanded for more detailed validation)
 const resumeSchema = z.object({
@@ -131,7 +132,8 @@ const ResumeBuilder: React.FC = () => {
             <h1 className="text-xl sm:text-2xl font-bold flex items-center">
               <Bot className="mr-2 h-6 w-6 sm:h-7 sm:w-7" /> AI Resume Architect
             </h1>
-            <div className="space-x-2">
+            <div className="flex items-center space-x-2">
+              <ThemeToggleButton />
               <Button variant="secondary" onClick={handleExportPdf} className="bg-accent hover:bg-accent/90 text-accent-foreground px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm">
                 <Download className="mr-1 sm:mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4" /> Download PDF
               </Button>
@@ -187,4 +189,3 @@ const ResumeBuilder: React.FC = () => {
 };
 
 export default ResumeBuilder;
-

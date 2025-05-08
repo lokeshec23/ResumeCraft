@@ -21,20 +21,20 @@ const CreativeTemplate: React.FC<ResumeTemplateComponentProps> = ({ data }) => {
       </>
     );
     return href ? (
-      <a href={href.startsWith('http') || href.startsWith('mailto:') ? href : `https://${href}`} target="_blank" rel="noopener noreferrer" className="flex items-center text-xs text-gray-700 hover:text-accent transition-colors py-0.5">
+      <a href={href.startsWith('http') || href.startsWith('mailto:') ? href : `https://${href}`} target="_blank" rel="noopener noreferrer" className="flex items-center text-xs text-foreground/80 hover:text-accent transition-colors py-0.5">
         {content}
       </a>
     ) : (
-      <span className="flex items-center text-xs text-gray-700 py-0.5">{content}</span>
+      <span className="flex items-center text-xs text-foreground/80 py-0.5">{content}</span>
     );
   };
 
   return (
-    <div className="p-6 bg-white text-gray-800 font-sans text-sm leading-relaxed shadow-lg" style={{ fontFamily: "'Lato', 'Helvetica Neue', Helvetica, Arial, sans-serif" }}>
+    <div className="p-6 bg-card text-card-foreground font-sans text-sm leading-relaxed shadow-lg print:bg-white print:text-gray-800" style={{ fontFamily: "'Lato', 'Helvetica Neue', Helvetica, Arial, sans-serif" }}>
       {/* Header */}
       <header className="text-center mb-8 border-b-2 border-accent pb-6">
         <h1 className="text-4xl font-bold text-primary" style={{ fontFamily: "'Playfair Display', serif" }}>{personalDetails.fullName}</h1>
-        {personalDetails.summary && <p className="text-sm text-gray-600 mt-2 italic max-w-2xl mx-auto">{personalDetails.summary.substring(0, personalDetails.summary.indexOf('.') + 1 || 100) + "..."}</p>}
+        {personalDetails.summary && <p className="text-sm text-muted-foreground mt-2 italic max-w-2xl mx-auto">{personalDetails.summary.substring(0, personalDetails.summary.indexOf('.') + 1 || 100) + "..."}</p>}
       </header>
 
       <div className="grid grid-cols-12 gap-x-8">
@@ -58,10 +58,10 @@ const CreativeTemplate: React.FC<ResumeTemplateComponentProps> = ({ data }) => {
               {education.map((edu) => (
                 <div key={edu.id} className="mb-3 text-xs">
                   <h3 className="font-semibold text-primary">{edu.degree}</h3>
-                  <p className="italic">{edu.institution}</p>
-                  {edu.fieldOfStudy && <p className="text-gray-600">{edu.fieldOfStudy}</p>}
-                  <p className="text-gray-500 text-xs">{edu.startDate} - {edu.endDate}</p>
-                  {edu.description && <p className="mt-0.5 text-gray-600">{edu.description}</p>}
+                  <p className="italic text-foreground/90">{edu.institution}</p>
+                  {edu.fieldOfStudy && <p className="text-muted-foreground">{edu.fieldOfStudy}</p>}
+                  <p className="text-muted-foreground/80 text-xs">{edu.startDate} - {edu.endDate}</p>
+                  {edu.description && <p className="mt-0.5 text-foreground/80">{edu.description}</p>}
                 </div>
               ))}
             </section>
@@ -87,7 +87,7 @@ const CreativeTemplate: React.FC<ResumeTemplateComponentProps> = ({ data }) => {
           {personalDetails.summary && (
              <section>
                 <SectionTitle title="About Me" icon={Sparkles} />
-                <p className="text-xs whitespace-pre-line">{personalDetails.summary}</p>
+                <p className="text-xs whitespace-pre-line text-foreground/90">{personalDetails.summary}</p>
             </section>
           )}
 
@@ -97,11 +97,11 @@ const CreativeTemplate: React.FC<ResumeTemplateComponentProps> = ({ data }) => {
               {experience.map((exp) => (
                 <div key={exp.id} className="mb-4">
                   <h3 className="text-md font-semibold text-primary">{exp.jobTitle}</h3>
-                  <div className="flex justify-between items-baseline text-xs text-gray-600 mb-0.5">
+                  <div className="flex justify-between items-baseline text-xs text-muted-foreground mb-0.5">
                     <p className="font-medium italic">{exp.company}</p>
                     <p>{exp.startDate} - {exp.endDate}</p>
                   </div>
-                  <ul className="list-disc list-outside ml-4 mt-1 text-xs space-y-0.5 text-gray-700">
+                  <ul className="list-disc list-outside ml-4 mt-1 text-xs space-y-0.5 text-foreground/80">
                     {exp.responsibilities.map((resp, idx) => resp && <li key={idx}>{resp}</li>)}
                   </ul>
                 </div>
@@ -122,8 +122,8 @@ const CreativeTemplate: React.FC<ResumeTemplateComponentProps> = ({ data }) => {
                       </a>
                     )}
                   </div>
-                  <p className="text-xs mt-0.5 text-gray-700">{proj.description}</p>
-                  {proj.technologies.length > 0 && <p className="text-xs mt-1"><strong>Built with:</strong> {proj.technologies.filter(t => t).join(', ')}</p>}
+                  <p className="text-xs mt-0.5 text-foreground/80">{proj.description}</p>
+                  {proj.technologies.length > 0 && <p className="text-xs mt-1"><strong className="text-foreground/90">Built with:</strong> {proj.technologies.filter(t => t).join(', ')}</p>}
                 </div>
               ))}
             </section>

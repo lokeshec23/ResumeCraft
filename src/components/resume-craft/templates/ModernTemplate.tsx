@@ -15,19 +15,19 @@ const ModernTemplate: React.FC<ResumeTemplateComponentProps> = ({ data }) => {
     if (!text) return null;
     const content = <><Icon className="w-4 h-4 mr-2 text-accent" /> {label && <span className="font-medium">{label}: </span>}{text}</>;
     return href ? 
-      <a href={href.startsWith('http') || href.startsWith('mailto:') ? href : `https://${href}`} target="_blank" rel="noopener noreferrer" className="flex items-center text-xs mb-1 hover:text-primary transition-colors">{content}</a> : 
-      <span className="flex items-center text-xs mb-1">{content}</span>;
+      <a href={href.startsWith('http') || href.startsWith('mailto:') ? href : `https://${href}`} target="_blank" rel="noopener noreferrer" className="flex items-center text-xs mb-1 text-card-foreground hover:text-primary transition-colors">{content}</a> : 
+      <span className="flex items-center text-xs mb-1 text-card-foreground">{content}</span>;
   };
 
 
   return (
-    <div className="p-8 bg-white text-gray-700 font-sans leading-normal shadow-lg" style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>
+    <div className="p-8 bg-card text-card-foreground font-sans leading-normal shadow-lg print:bg-white print:text-gray-700" style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>
       <div className="grid grid-cols-12 gap-8">
         {/* Left Column (Contact & Skills) */}
-        <div className="col-span-12 md:col-span-4 bg-background p-6 rounded-md shadow-sm">
+        <div className="col-span-12 md:col-span-4 bg-background/50 dark:bg-background/20 p-6 rounded-md shadow-sm">
           <div className="text-center mb-8">
             <h1 className="text-2xl font-bold text-primary mb-1">{personalDetails.fullName}</h1>
-            {/* <p className="text-sm text-gray-600">Optional Tagline / Current Role</p> */}
+            {/* <p className="text-sm text-muted-foreground">Optional Tagline / Current Role</p> */}
           </div>
           
           <Section title="Contact">
@@ -43,8 +43,8 @@ const ModernTemplate: React.FC<ResumeTemplateComponentProps> = ({ data }) => {
             <Section title="Skills">
               {skills.map((skill) => skill.name && (
                 <div key={skill.id} className="mb-1.5">
-                  <p className="text-xs font-medium">{skill.name}</p>
-                  {skill.category && <p className="text-xs text-gray-500">{skill.category}</p>}
+                  <p className="text-xs font-medium text-card-foreground">{skill.name}</p>
+                  {skill.category && <p className="text-xs text-muted-foreground">{skill.category}</p>}
                 </div>
               ))}
             </Section>
@@ -55,7 +55,7 @@ const ModernTemplate: React.FC<ResumeTemplateComponentProps> = ({ data }) => {
         <div className="col-span-12 md:col-span-8 py-2">
           {personalDetails.summary && (
             <Section title="Summary">
-              <p className="text-xs">{personalDetails.summary}</p>
+              <p className="text-xs text-card-foreground/90">{personalDetails.summary}</p>
             </Section>
           )}
 
@@ -65,10 +65,10 @@ const ModernTemplate: React.FC<ResumeTemplateComponentProps> = ({ data }) => {
                 <div key={exp.id} className="mb-4">
                   <h3 className="text-md font-semibold text-primary">{exp.jobTitle}</h3>
                   <div className="flex justify-between items-baseline text-xs mb-0.5">
-                    <p className="italic">{exp.company}</p>
-                    <p className="text-gray-500">{exp.startDate} - {exp.endDate}</p>
+                    <p className="italic text-card-foreground/80">{exp.company}</p>
+                    <p className="text-muted-foreground">{exp.startDate} - {exp.endDate}</p>
                   </div>
-                  <ul className="list-disc list-outside ml-4 mt-1 text-xs space-y-0.5">
+                  <ul className="list-disc list-outside ml-4 mt-1 text-xs space-y-0.5 text-card-foreground/80">
                     {exp.responsibilities.map((resp, idx) => resp && <li key={idx}>{resp}</li>)}
                   </ul>
                 </div>
@@ -81,9 +81,9 @@ const ModernTemplate: React.FC<ResumeTemplateComponentProps> = ({ data }) => {
               {education.map((edu) => (
                 <div key={edu.id} className="mb-4">
                   <h3 className="text-md font-semibold text-primary">{edu.degree}</h3>
-                  <p className="italic text-xs">{edu.institution} - {edu.fieldOfStudy}</p>
-                  <p className="text-xs text-gray-500">{edu.startDate} - {edu.endDate}</p>
-                  {edu.description && <p className="text-xs mt-1">{edu.description}</p>}
+                  <p className="italic text-xs text-card-foreground/80">{edu.institution} - {edu.fieldOfStudy}</p>
+                  <p className="text-xs text-muted-foreground">{edu.startDate} - {edu.endDate}</p>
+                  {edu.description && <p className="text-xs mt-1 text-card-foreground/80">{edu.description}</p>}
                 </div>
               ))}
             </Section>
@@ -101,8 +101,8 @@ const ModernTemplate: React.FC<ResumeTemplateComponentProps> = ({ data }) => {
                       </a>
                     )}
                   </h3>
-                  <p className="text-xs mt-0.5">{proj.description}</p>
-                  {proj.technologies.length > 0 && <p className="text-xs mt-1"><strong>Built with:</strong> {proj.technologies.filter(t => t).join(', ')}</p>}
+                  <p className="text-xs mt-0.5 text-card-foreground/80">{proj.description}</p>
+                  {proj.technologies.length > 0 && <p className="text-xs mt-1"><strong className="text-card-foreground/90">Built with:</strong> {proj.technologies.filter(t => t).join(', ')}</p>}
                 </div>
               ))}
             </Section>

@@ -2,6 +2,7 @@ import type {Metadata} from 'next';
 import { Inter } from 'next/font/google'; // Changed from Geist to Inter for a more common professional look
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
+import { ThemeProvider } from '@/components/theme/ThemeProvider';
 
 const inter = Inter({
   variable: '--font-inter',
@@ -21,10 +22,16 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning> {/* Added suppressHydrationWarning for potential theme/client-side state issues */}
       <body className={`${inter.variable} font-sans antialiased`}> {/* Use font-sans for Inter */}
-        {children}
-        <Toaster />
+        <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+        >
+          {children}
+          <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   );
 }
-

@@ -11,15 +11,15 @@ const DefaultTemplate: React.FC<ResumeTemplateComponentProps> = ({ data }) => {
   const ContactIcon: React.FC<{ icon: React.ElementType, text?: string, href?: string }> = ({ icon: Icon, text, href }) => {
     if (!text) return null;
     const content = <><Icon className="w-3.5 h-3.5 mr-1.5 text-primary" />{text}</>;
-    return href ? <a href={href.startsWith('http') || href.startsWith('mailto:') ? href : `https://${href}`} target="_blank" rel="noopener noreferrer" className="flex items-center text-xs hover:text-accent transition-colors">{content}</a> : <span className="flex items-center text-xs">{content}</span>;
+    return href ? <a href={href.startsWith('http') || href.startsWith('mailto:') ? href : `https://${href}`} target="_blank" rel="noopener noreferrer" className="flex items-center text-xs text-foreground/80 hover:text-accent transition-colors">{content}</a> : <span className="flex items-center text-xs text-foreground/80">{content}</span>;
   };
 
   return (
-    <div className="p-6 bg-white text-gray-800 font-serif text-sm leading-relaxed shadow-lg" style={{ fontFamily: "'Times New Roman', Times, serif" }}>
+    <div className="p-6 bg-card text-card-foreground font-serif text-sm leading-relaxed shadow-lg print:bg-white print:text-gray-800" style={{ fontFamily: "'Times New Roman', Times, serif" }}>
       {/* Header */}
       <header className="text-center mb-6">
         <h1 className="text-3xl font-bold text-primary">{personalDetails.fullName}</h1>
-        <div className="flex flex-wrap justify-center items-center gap-x-4 gap-y-1 mt-2 text-xs text-gray-600">
+        <div className="flex flex-wrap justify-center items-center gap-x-4 gap-y-1 mt-2 text-xs text-muted-foreground">
           <ContactIcon icon={Mail} text={personalDetails.email} href={`mailto:${personalDetails.email}`} />
           <ContactIcon icon={Phone} text={personalDetails.phoneNumber} />
           <ContactIcon icon={MapPin} text={personalDetails.address} />
@@ -33,7 +33,7 @@ const DefaultTemplate: React.FC<ResumeTemplateComponentProps> = ({ data }) => {
       {personalDetails.summary && (
         <section className="mb-4">
           <SectionTitle title="Summary" />
-          <p className="text-xs">{personalDetails.summary}</p>
+          <p className="text-xs text-foreground/90">{personalDetails.summary}</p>
         </section>
       )}
 
@@ -43,12 +43,12 @@ const DefaultTemplate: React.FC<ResumeTemplateComponentProps> = ({ data }) => {
           <SectionTitle title="Experience" />
           {experience.map((exp) => (
             <div key={exp.id} className="mb-3">
-              <h3 className="text-md font-semibold">{exp.jobTitle}</h3>
-              <div className="flex justify-between items-center text-xs text-gray-600">
+              <h3 className="text-md font-semibold text-primary">{exp.jobTitle}</h3>
+              <div className="flex justify-between items-center text-xs text-muted-foreground">
                 <p className="font-medium">{exp.company}</p>
                 <p>{exp.startDate} - {exp.endDate}</p>
               </div>
-              <ul className="list-disc list-inside ml-4 mt-1 text-xs space-y-0.5">
+              <ul className="list-disc list-inside ml-4 mt-1 text-xs space-y-0.5 text-foreground/80">
                 {exp.responsibilities.map((resp, idx) => resp && <li key={idx}>{resp}</li>)}
               </ul>
             </div>
@@ -62,12 +62,12 @@ const DefaultTemplate: React.FC<ResumeTemplateComponentProps> = ({ data }) => {
           <SectionTitle title="Education" />
           {education.map((edu) => (
             <div key={edu.id} className="mb-3">
-              <h3 className="text-md font-semibold">{edu.degree}</h3>
-              <div className="flex justify-between items-center text-xs text-gray-600">
+              <h3 className="text-md font-semibold text-primary">{edu.degree}</h3>
+              <div className="flex justify-between items-center text-xs text-muted-foreground">
                 <p className="font-medium">{edu.institution} - {edu.fieldOfStudy}</p>
                 <p>{edu.startDate} - {edu.endDate}</p>
               </div>
-              {edu.description && <p className="text-xs mt-1">{edu.description}</p>}
+              {edu.description && <p className="text-xs mt-1 text-foreground/80">{edu.description}</p>}
             </div>
           ))}
         </section>
@@ -79,10 +79,10 @@ const DefaultTemplate: React.FC<ResumeTemplateComponentProps> = ({ data }) => {
           <SectionTitle title="Projects" />
           {projects.map((proj) => (
             <div key={proj.id} className="mb-3">
-              <h3 className="text-md font-semibold">{proj.name}</h3>
+              <h3 className="text-md font-semibold text-primary">{proj.name}</h3>
               {proj.link && <a href={proj.link.startsWith('http') ? proj.link : `https://${proj.link}`} target="_blank" rel="noopener noreferrer" className="text-xs text-accent hover:underline">{proj.link}</a>}
-              <p className="text-xs mt-1">{proj.description}</p>
-              {proj.technologies.length > 0 && <p className="text-xs mt-1"><strong>Technologies:</strong> {proj.technologies.filter(t => t).join(', ')}</p>}
+              <p className="text-xs mt-1 text-foreground/80">{proj.description}</p>
+              {proj.technologies.length > 0 && <p className="text-xs mt-1"><strong className="text-foreground/90">Technologies:</strong> {proj.technologies.filter(t => t).join(', ')}</p>}
             </div>
           ))}
         </section>
@@ -94,7 +94,7 @@ const DefaultTemplate: React.FC<ResumeTemplateComponentProps> = ({ data }) => {
           <SectionTitle title="Skills" />
           <div className="flex flex-wrap gap-2 text-xs">
             {skills.map((skill) => skill.name && (
-              <span key={skill.id} className="bg-gray-200 text-gray-700 px-2 py-0.5 rounded">
+              <span key={skill.id} className="bg-muted text-muted-foreground px-2 py-0.5 rounded">
                 {skill.category ? `${skill.category}: ${skill.name}` : skill.name}
               </span>
             ))}
