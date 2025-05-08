@@ -159,7 +159,7 @@ const ResumeBuilder: React.FC = () => {
   
   return (
     <FormProvider {...methods}>
-      <div className="flex flex-col h-screen bg-background"> {/* Changed min-h-screen to h-screen for fixed height */}
+      <div className="flex flex-col h-screen overflow-hidden bg-background"> {/* Added overflow-hidden, h-screen for fixed layout */}
         <header className="bg-primary text-primary-foreground p-2 sm:p-3 shadow-md sticky top-0 z-50">
           <div className="container mx-auto flex flex-wrap justify-between items-center gap-2">
             <Link href="/" className="text-lg sm:text-xl font-bold flex items-center">
