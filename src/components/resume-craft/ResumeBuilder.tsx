@@ -25,7 +25,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
-  DropdownMenuTrigger, // Added missing import
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import html2canvas from 'html2canvas';
 
@@ -225,8 +225,8 @@ const ResumeBuilder: React.FC = () => {
         <main className="flex-grow flex flex-col md:flex-row gap-4 p-2 sm:p-4 overflow-hidden"> {/* overflow-hidden is key here */}
           {/* Left Pane: Editor/Templates */}
           <div className="w-full md:w-2/5 lg:w-1/3 xl:w-2/5 flex-shrink-0 flex flex-col min-h-0"> {/* Added min-h-0 for proper flex sizing */}
-            <Card className="flex-grow flex flex-col overflow-hidden shadow-lg"> {/* min-h-0 could also be beneficial here if Card had flex issues */}
-              <Tabs defaultValue="editor" className="w-full flex-grow flex flex-col">
+            <Card className="flex-grow flex flex-col overflow-hidden shadow-lg min-h-0"> {/* Added min-h-0 */}
+              <Tabs defaultValue="editor" className="w-full flex-grow flex flex-col min-h-0"> {/* Added min-h-0 */}
                 <TabsList className="grid w-full grid-cols-2 rounded-none rounded-t-lg">
                   <TabsTrigger value="editor" className="py-2 sm:py-2.5 data-[state=active]:bg-accent data-[state=active]:text-accent-foreground text-xs sm:text-sm">
                     <Edit3 className="mr-1 sm:mr-1.5 h-3.5 w-3.5" /> Editor
@@ -235,13 +235,13 @@ const ResumeBuilder: React.FC = () => {
                     <Palette className="mr-1 sm:mr-1.5 h-3.5 w-3.5" /> Templates
                   </TabsTrigger>
                 </TabsList>
-                <TabsContent value="editor" className="flex-grow overflow-hidden min-h-0 p-1 sm:p-2 md:p-3"> {/* Added min-h-0 */}
-                   <ScrollArea className="h-full pr-1 sm:pr-2"> {/* h-full enables scroll within this area */}
+                <TabsContent value="editor" className="flex-grow overflow-hidden min-h-0 p-1 sm:p-2 md:p-3">
+                   <ScrollArea className="h-full pr-1 sm:pr-2">
                       <ResumeFormWrapper />
                    </ScrollArea>
                 </TabsContent>
-                <TabsContent value="templates" className="flex-grow overflow-hidden min-h-0 p-1 sm:p-2 md:p-3"> {/* Added min-h-0 for consistency */}
-                   <ScrollArea className="h-full pr-1 sm:pr-2"> {/* h-full enables scroll within this area */}
+                <TabsContent value="templates" className="flex-grow overflow-hidden min-h-0 p-1 sm:p-2 md:p-3">
+                   <ScrollArea className="h-full pr-1 sm:pr-2">
                       <TemplateSelector selectedTemplate={selectedTemplate} onSelectTemplate={setSelectedTemplate} />
                    </ScrollArea>
                 </TabsContent>
@@ -251,18 +251,18 @@ const ResumeBuilder: React.FC = () => {
 
           {/* Right Pane: Live Preview */}
           <div className="flex-grow flex flex-col min-h-0"> {/* min-h-0 is important for flex item with overflow */}
-            <Card className="flex-grow flex flex-col overflow-hidden shadow-lg">
+            <Card className="flex-grow flex flex-col overflow-hidden shadow-lg min-h-0"> {/* Added min-h-0 */}
               <CardHeader className="p-3 sm:p-4 border-b">
                 <CardTitle className="text-base sm:text-lg flex items-center">
                     <Eye className="mr-2 h-4 w-4 sm:h-5 sm:w-5 text-primary"/>
                     Live Preview
                 </CardTitle>
               </CardHeader>
-              <CardContent className="flex-grow p-0 overflow-hidden"> {/* Remove padding, ResumePreviewWrapper handles it */}
+              <CardContent className="flex-grow p-0 overflow-hidden">
                  <ResumePreviewWrapper 
                     resumeData={resumeData} 
                     selectedTemplateId={selectedTemplate}
-                    className="h-full bg-muted/30" // h-full enables scroll within ResumePreviewWrapper
+                    className="h-full bg-muted/30" 
                   />
               </CardContent>
             </Card>
@@ -274,3 +274,6 @@ const ResumeBuilder: React.FC = () => {
 };
 
 export default ResumeBuilder;
+    
+
+    
